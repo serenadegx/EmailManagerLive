@@ -19,6 +19,7 @@ public class AccountLocalDataSource implements AccountDataSource {
     @Override
     public void add(Account account) {
         dao.insert(account);
+
     }
 
     @Override
