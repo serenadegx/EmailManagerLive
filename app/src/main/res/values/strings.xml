@@ -2,7 +2,7 @@
     <string name="app_name">EmailManagerLive</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_title">EmailManager</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
@@ -10,7 +10,47 @@
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
-    <string name="menu_tools">Tools</string>
-    <string name="menu_share">Share</string>
+    <string name="menu_tools">设置</string>
+    <string name="menu_share">分享</string>
     <string name="menu_send">Send</string>
+    <!--qq邮箱配置-->
+    <string-array name="qq_email">
+        <item>qq邮箱</item>
+        <item>imap</item>
+        <item>mail.imap.host</item>
+        <item>imap.qq.com</item>
+        <item>mail.imap.port</item>
+        <item>993</item>
+        <item>mail.imap.ssl.enable</item>
+        <item>1</item>
+        <item>smtp</item>
+        <item>mail.smtp.host</item>
+        <item>smtp.qq.com</item>
+        <item>mail.smtp.port</item>
+        <item>465</item>
+        <item>mail.smtp.ssl.enable</item>
+        <item>1</item>
+        <item>mail.smtp.auth</item>
+        <item>1</item>
+    </string-array>
+    <!--腾讯企业邮箱配置-->
+    <string-array name="qq_exmail">
+        <item>腾讯企业邮箱</item>
+        <item>imap</item>
+        <item>mail.imap.host</item>
+        <item>imap.exmail.qq.com</item>
+        <item>mail.imap.port</item>
+        <item>993</item>
+        <item>mail.imap.ssl.enable</item>
+        <item>1</item>
+        <item>smtp</item>
+        <item>mail.smtp.host</item>
+        <item>smtp.exmail.qq.com</item>
+        <item>mail.smtp.port</item>
+        <item>465</item>
+        <item>mail.smtp.ssl.enable</item>
+        <item>1</item>
+        <item>mail.smtp.auth</item>
+        <item>1</item>
+    </string-array>
 </resources>

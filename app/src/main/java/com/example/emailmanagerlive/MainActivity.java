@@ -1,17 +1,26 @@
 package com.example.emailmanagerlive;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.MenuItem;
 
 import android.view.Menu;
+import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
+import com.example.emailmanagerlive.emails.DraftsFragment;
+import com.example.emailmanagerlive.emails.InboxFragment;
+import com.example.emailmanagerlive.emails.SentFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -35,11 +44,20 @@ public class MainActivity extends AppCompatActivity
         });
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        ((TextView) headerView.findViewById(R.id.textView)).setText(EmailApplication.getAccount().getAccount());
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+        replaceFragmentInActivity(InboxFragment.newInstance(), getSupportFragmentManager());
+    }
+
+    private void replaceFragmentInActivity(Fragment fragment, FragmentManager fragmentManager) {
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.container, fragment);
+        transaction.commit();
     }
 
     @Override
@@ -80,22 +98,24 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_home) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
+        if (id == R.id.nav_inbox) {
+            replaceFragmentInActivity(InboxFragment.newInstance(), getSupportFragmentManager());
+        } else if (id == R.id.nav_send) {
+            replaceFragmentInActivity(SentFragment.newInstance(), getSupportFragmentManager());
+        } else if (id == R.id.nav_drafts) {
+            replaceFragmentInActivity(DraftsFragment.newInstance(), getSupportFragmentManager());
         } else if (id == R.id.nav_tools) {
 
         } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
 
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public static void start2MainActivity(Context context) {
+        context.startActivity(new Intent(context, MainActivity.class));
     }
 }

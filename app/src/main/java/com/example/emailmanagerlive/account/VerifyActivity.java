@@ -1,8 +1,10 @@
 package com.example.emailmanagerlive.account;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
@@ -12,6 +14,7 @@ import androidx.lifecycle.Observer;
 import com.example.emailmanagerlive.Event;
 import com.example.emailmanagerlive.MainActivity;
 import com.example.emailmanagerlive.R;
+import com.example.emailmanagerlive.data.source.AccountRepository;
 import com.example.emailmanagerlive.databinding.ActivityVerifyBinding;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -24,7 +27,7 @@ public class VerifyActivity extends AppCompatActivity implements VerifyNavigator
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_verify);
-        mViewModel = new VerifyModel();
+        mViewModel = new VerifyModel(AccountRepository.provideRepository(), getIntent().getLongExtra("category", 1));
         mBinding.setViewModel(mViewModel);
         setupSnackBar();
         subscribeToNavigationChanges();
@@ -57,5 +60,10 @@ public class VerifyActivity extends AppCompatActivity implements VerifyNavigator
                 }
             }
         });
+    }
+
+    public static void start2VerifyActivity(Context context, long categoryId) {
+        context.startActivity(new Intent(context, VerifyActivity.class)
+                .putExtra("category", categoryId));
     }
 }

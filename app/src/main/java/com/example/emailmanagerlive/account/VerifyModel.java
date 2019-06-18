@@ -9,6 +9,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.emailmanagerlive.Event;
+import com.example.emailmanagerlive.data.Account;
+import com.example.emailmanagerlive.data.source.AccountRepository;
 
 import java.util.Properties;
 
@@ -25,8 +27,12 @@ public class VerifyModel extends ViewModel {
     public final MutableLiveData<String> pwd = new MutableLiveData<>();
     private final MutableLiveData<Event<String>> snackBarText = new MutableLiveData<>();
     private final MutableLiveData<Event<Object>> verified = new MutableLiveData<>();
+    private final AccountRepository mRepository;
+    private final long mCategory;
 
-    public VerifyModel() {
+    public VerifyModel(AccountRepository repository, long category) {
+        this.mRepository = repository;
+        this.mCategory = category;
         account.setValue("guoxinrui@fantaike.ai");
         pwd.setValue("1993Gxr");
     }
@@ -61,6 +67,7 @@ public class VerifyModel extends ViewModel {
                     store = session.getStore("imap");
                     store.connect();
                     //储存账号
+                    saveAccount();
                     snackBarText.postValue(new Event<>("登录成功"));
                     SystemClock.sleep(1000);
                     verified.postValue(new Event<>(new Object()));
@@ -79,6 +86,15 @@ public class VerifyModel extends ViewModel {
                 }
             }
         }.start();
+    }
+
+    private void saveAccount() {
+        Account data = new Account();
+        data.setAccount(account.getValue());
+        data.setPwd(pwd.getValue());
+        data.setConfigId(mCategory);
+        data.setCur(true);
+        mRepository.add(data);
     }
 
 

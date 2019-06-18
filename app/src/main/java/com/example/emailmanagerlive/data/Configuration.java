@@ -1,11 +1,15 @@
 package com.example.emailmanagerlive.data;
 
+import androidx.databinding.BaseObservable;
+import androidx.databinding.Bindable;
+import androidx.databinding.Observable;
+
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Generated;
 
 @Entity
-public class Configuration {
+public class Configuration extends BaseObservable {
     @Id
     private long categoryId;
     private String name;
@@ -30,12 +34,12 @@ public class Configuration {
 
     @Generated(hash = 121756130)
     public Configuration(long categoryId, String name, String receiveProtocol,
-            String receiveHostKey, String receiveHostValue, String receivePortKey,
-            String receivePortValue, String receiveEncryptKey,
-            boolean receiveEncryptValue, String sendProtocol, String sendHostKey,
-            String sendHostValue, String sendPortKey, String sendPortValue,
-            String sendEncryptKey, boolean sendEncryptValue, String authKey,
-            boolean authValue) {
+                         String receiveHostKey, String receiveHostValue, String receivePortKey,
+                         String receivePortValue, String receiveEncryptKey,
+                         boolean receiveEncryptValue, String sendProtocol, String sendHostKey,
+                         String sendHostValue, String sendPortKey, String sendPortValue,
+                         String sendEncryptKey, boolean sendEncryptValue, String authKey,
+                         boolean authValue) {
         this.categoryId = categoryId;
         this.name = name;
         this.receiveProtocol = receiveProtocol;
@@ -64,6 +68,7 @@ public class Configuration {
         return categoryId;
     }
 
+    @Bindable
     public String getName() {
         return name;
     }
