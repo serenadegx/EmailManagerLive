@@ -43,7 +43,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
             android:maxLength="20"
-            android:text="@{item.personal ==null ? item.from:item.personal}"
+            android:text="@{item.personal ==null ? item.from : item.personal}"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintLeft_toRightOf="@id/v"
             app:layout_constraintTop_toTopOf="parent" />

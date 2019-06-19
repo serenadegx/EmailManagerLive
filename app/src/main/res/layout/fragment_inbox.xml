@@ -2,7 +2,9 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <import type="android.view.View" />
 
         <variable
@@ -13,36 +15,42 @@
             name="adapter"
             type="com.example.emailmanagerlive.emails.adapter.InboxListAdapter" />
     </data>
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/srl"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:refreshing="@{viewModel.isLoading}"
-        android:onRefresh="@{viewModel}">
+        android:onRefresh="@{viewModel}"
+        app:refreshing="@{viewModel.isDataLoading}">
+
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:items="@{viewModel.mItems}"
+                android:items="@{viewModel.items}"
                 tools:listitem="@layout/item_email" />
+
             <LinearLayout
-                android:orientation="vertical"
-                android:gravity="center"
-                android:visibility="@{viewModel.empty ? View.VISIBLE : View.GONE}"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="@{viewModel.mEmpty ? View.VISIBLE : View.GONE}">
+
                 <ImageView
-                    android:src="@mipmap/icon_empty"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/icon_empty" />
+
                 <TextView
-                    android:text="空邮件"
-                    android:textColor="@android:color/black"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:text="空邮件"
+                    android:textColor="@android:color/black" />
             </LinearLayout>
         </FrameLayout>
 

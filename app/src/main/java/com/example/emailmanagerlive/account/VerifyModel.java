@@ -1,8 +1,6 @@
 package com.example.emailmanagerlive.account;
 
-import android.os.Handler;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.View;
 
 import androidx.lifecycle.MutableLiveData;
@@ -15,7 +13,6 @@ import com.example.emailmanagerlive.data.source.AccountRepository;
 import java.util.Properties;
 
 import javax.mail.Authenticator;
-import javax.mail.Folder;
 import javax.mail.MessagingException;
 import javax.mail.NoSuchProviderException;
 import javax.mail.PasswordAuthentication;

@@ -8,9 +8,11 @@ import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.identityscope.IdentityScopeType;
 import org.greenrobot.greendao.internal.DaoConfig;
 
+import com.example.emailmanagerlive.data.Email;
 import com.example.emailmanagerlive.data.Configuration;
 import com.example.emailmanagerlive.data.Account;
 
+import com.example.emailmanagerlive.data.EmailDao;
 import com.example.emailmanagerlive.data.ConfigurationDao;
 import com.example.emailmanagerlive.data.AccountDao;
 
@@ -23,9 +25,11 @@ import com.example.emailmanagerlive.data.AccountDao;
  */
 public class DaoSession extends AbstractDaoSession {
 
+    private final DaoConfig emailDaoConfig;
     private final DaoConfig configurationDaoConfig;
     private final DaoConfig accountDaoConfig;
 
+    private final EmailDao emailDao;
     private final ConfigurationDao configurationDao;
     private final AccountDao accountDao;
 
@@ -33,22 +37,32 @@ public class DaoSession extends AbstractDaoSession {
             daoConfigMap) {
         super(db);
 
+        emailDaoConfig = daoConfigMap.get(EmailDao.class).clone();
+        emailDaoConfig.initIdentityScope(type);
+
         configurationDaoConfig = daoConfigMap.get(ConfigurationDao.class).clone();
         configurationDaoConfig.initIdentityScope(type);
 
         accountDaoConfig = daoConfigMap.get(AccountDao.class).clone();
         accountDaoConfig.initIdentityScope(type);
 
+        emailDao = new EmailDao(emailDaoConfig, this);
         configurationDao = new ConfigurationDao(configurationDaoConfig, this);
         accountDao = new AccountDao(accountDaoConfig, this);
 
+        registerDao(Email.class, emailDao);
         registerDao(Configuration.class, configurationDao);
         registerDao(Account.class, accountDao);
     }
     
     public void clear() {
+        emailDaoConfig.clearIdentityScope();
         configurationDaoConfig.clearIdentityScope();
         accountDaoConfig.clearIdentityScope();
+    }
+
+    public EmailDao getEmailDao() {
+        return emailDao;
     }
 
     public ConfigurationDao getConfigurationDao() {
