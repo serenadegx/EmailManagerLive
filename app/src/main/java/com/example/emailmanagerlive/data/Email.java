@@ -8,6 +8,7 @@ import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Transient;
 
 import java.util.List;
+
 import org.greenrobot.greendao.annotation.Generated;
 
 @Entity
@@ -29,8 +30,8 @@ public class Email extends BaseObservable {
 
     @Generated(hash = 366761468)
     public Email(Long id, boolean isRead, String subject, String date, String from,
-            String personal, String to, String cc, String bcc, String content,
-            boolean hasAttach) {
+                 String personal, String to, String cc, String bcc, String content,
+                 boolean hasAttach) {
         this.id = id;
         this.isRead = isRead;
         this.subject = subject;
@@ -76,18 +77,22 @@ public class Email extends BaseObservable {
     public String getPersonal() {
         return personal;
     }
+
     @Bindable
     public String getTo() {
         return to;
     }
+
     @Bindable
     public String getCc() {
         return cc;
     }
+
     @Bindable
     public String getBcc() {
         return bcc;
     }
+
     @Bindable
     public String getContent() {
         return content;
@@ -96,6 +101,16 @@ public class Email extends BaseObservable {
     @Bindable
     public boolean isHasAttach() {
         return hasAttach;
+    }
+
+    @Bindable
+    public boolean getIsRead() {
+        return this.isRead;
+    }
+
+    @Bindable
+    public boolean getHasAttach() {
+        return this.hasAttach;
     }
 
     public List<Attachment> getAttachments() {
@@ -150,15 +165,8 @@ public class Email extends BaseObservable {
         this.attachments = attachments;
     }
 
-    public boolean getIsRead() {
-        return this.isRead;
-    }
-
     public void setIsRead(boolean isRead) {
         this.isRead = isRead;
     }
 
-    public boolean getHasAttach() {
-        return this.hasAttach;
-    }
 }

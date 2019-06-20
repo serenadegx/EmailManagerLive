@@ -20,9 +20,9 @@ public class EmailLocalDataSource implements EmailDataSource {
         this.dao = dao;
     }
 
-    public static EmailLocalDataSource getInstance() {
+    public static EmailLocalDataSource getInstance(EmailDao dao) {
         if (INSTANCE == null) {
-            INSTANCE = new EmailLocalDataSource(EmailApplication.getDaoSession().getEmailDao());
+            INSTANCE = new EmailLocalDataSource(dao);
         }
         return INSTANCE;
     }
@@ -52,5 +52,13 @@ public class EmailLocalDataSource implements EmailDataSource {
     public void delete(Account account, long id, CallBack callBack) {
         dao.deleteByKey(id);
         callBack.onSuccess();
+    }
+
+    public void deleteAll(){
+        dao.deleteAll();
+    }
+
+    public void saveAll(List<Email> emails){
+        dao.insertInTx(emails);
     }
 }

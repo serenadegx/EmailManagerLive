@@ -1,5 +1,7 @@
 package com.example.emailmanagerlive.data.source.local;
 
+import android.util.Log;
+
 import com.example.emailmanagerlive.data.Account;
 import com.example.emailmanagerlive.data.AccountDao;
 import com.example.emailmanagerlive.data.source.AccountDataSource;
@@ -70,7 +72,10 @@ public class AccountLocalDataSource implements AccountDataSource {
         QueryBuilder<Account> qb = dao.queryBuilder().where(AccountDao.Properties.IsCur.eq("true"));
         List<Account> data = qb.list();
         if (data != null && data.size() > 0) {
+            Account account = data.get(0);
             callBack.onAccountLoaded(data.get(0));
+            Log.i("mango", "account:" + account.getAccount() + "    isCurrent:" + account.isCur() + "  ReceiveProtocol:"
+                    + account.getConfig().getReceiveProtocol() + "  ReceiveHost:" + account.getConfig().getReceiveHostValue());
         } else {
             callBack.onDataNotAvailable();
         }

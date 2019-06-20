@@ -31,7 +31,7 @@ public class EmailApplication extends Application {
     }
 
     private void initGreenDao() {
-        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "email.db");
+        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "email_manager.db");
         SQLiteDatabase db = helper.getWritableDatabase();
         DaoMaster daoMaster = new DaoMaster(db);
         daoSession = daoMaster.newSession();

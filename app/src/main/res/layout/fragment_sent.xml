@@ -9,11 +9,11 @@
 
         <variable
             name="viewModel"
-            type="com.example.emailmanagerlive.emails.inbox.InboxViewModel" />
+            type="com.example.emailmanagerlive.emails.sent.SentViewModel" />
 
         <variable
             name="adapter"
-            type="com.example.emailmanagerlive.emails.adapter.InboxListAdapter" />
+            type="com.example.emailmanagerlive.emails.adapter.SentListAdapter" />
     </data>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -32,7 +32,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:items="@{viewModel.items}"
-                tools:listitem="@layout/item_email" />
+                tools:listitem="@layout/item_sent" />
 
             <LinearLayout
                 android:layout_width="match_parent"

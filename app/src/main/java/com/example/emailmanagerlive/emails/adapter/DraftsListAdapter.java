@@ -14,16 +14,16 @@ import com.example.emailmanagerlive.data.Email;
 import com.example.emailmanagerlive.utils.BaseAdapter;
 import com.example.emailmanagerlive.utils.BaseViewHolder;
 
-public class InboxListAdapter extends BaseAdapter<Email, BaseViewHolder> {
+public class DraftsListAdapter extends BaseAdapter<Email, BaseViewHolder> {
     private LifecycleOwner mLifecycleOwner;
-    public InboxListAdapter(Context context, LifecycleOwner activity) {
+    public DraftsListAdapter(Context context, LifecycleOwner activity) {
         super(context);
         mLifecycleOwner = activity;
     }
 
     @Override
     public BaseViewHolder onCreateVH(ViewGroup parent, int viewType) {
-        ViewDataBinding dataBinding = DataBindingUtil.inflate(LayoutInflater.from(mContext), R.layout.item_inbox, parent, false);
+        ViewDataBinding dataBinding = DataBindingUtil.inflate(LayoutInflater.from(mContext), R.layout.item_drafts, parent, false);
         return new BaseViewHolder(dataBinding);
     }
 

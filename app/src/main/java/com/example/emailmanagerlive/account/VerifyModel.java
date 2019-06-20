@@ -6,6 +6,7 @@ import android.view.View;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.emailmanagerlive.EmailApplication;
 import com.example.emailmanagerlive.Event;
 import com.example.emailmanagerlive.data.Account;
 import com.example.emailmanagerlive.data.source.AccountRepository;
@@ -92,6 +93,7 @@ public class VerifyModel extends ViewModel {
         data.setConfigId(mCategory);
         data.setCur(true);
         mRepository.add(data);
+        EmailApplication.setAccount(data);
     }
 
 

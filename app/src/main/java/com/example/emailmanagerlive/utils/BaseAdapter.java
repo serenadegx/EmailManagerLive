@@ -60,9 +60,11 @@ public abstract class BaseAdapter<T, VH extends RecyclerView.ViewHolder> extends
      * @param data 数据源
      */
     public void refreshData(List<T> data) {
-        mData.clear();
-        mData.addAll(data);
-        notifyDataSetChanged();
+        if (data != null) {
+            mData.clear();
+            mData.addAll(data);
+            notifyDataSetChanged();
+        }
     }
 
     /**

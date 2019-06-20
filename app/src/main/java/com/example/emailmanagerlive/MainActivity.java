@@ -18,9 +18,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.emailmanagerlive.emails.DraftsFragment;
-import com.example.emailmanagerlive.emails.InboxFragment;
-import com.example.emailmanagerlive.emails.SentFragment;
+import com.example.emailmanagerlive.emails.drafts.DraftsFragment;
+import com.example.emailmanagerlive.emails.inbox.InboxFragment;
+import com.example.emailmanagerlive.emails.sent.SentFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -109,9 +109,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_share) {
 
         }
-
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+
         return true;
     }
 
