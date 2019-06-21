@@ -32,23 +32,33 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
-            android:singleLine="true"
             android:ellipsize="end"
+            android:singleLine="true"
             android:text="@{item.to}"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/icon_has_attach"
+            android:visibility="@{item.hasAttach ? View.VISIBLE : View.INVISIBLE}"
+            app:layout_constraintBottom_toBottomOf="@id/tv_from"
+            app:layout_constraintLeft_toRightOf="@id/tv_from"
+            app:layout_constraintTop_toTopOf="@id/tv_from" />
+
 
         <TextView
             android:id="@+id/tv_subject"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:singleLine="true"
             android:ellipsize="end"
+            android:singleLine="true"
             android:text="@{item.subject}"
-            app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_from" />
 
         <TextView

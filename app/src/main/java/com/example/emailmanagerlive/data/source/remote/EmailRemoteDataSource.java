@@ -1,9 +1,12 @@
 package com.example.emailmanagerlive.data.source.remote;
 
+import android.util.Log;
+
 import com.example.emailmanagerlive.data.Account;
 import com.example.emailmanagerlive.data.Email;
 import com.example.emailmanagerlive.data.source.EmailDataSource;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -68,7 +71,7 @@ public class EmailRemoteDataSource implements EmailDataSource {
                         account.getAccount(), account.getPwd());
             }
         });
-        session.setDebug(true);
+//        session.setDebug(true);
         Store store = null;
         Folder inbox = null;
         try {
@@ -82,8 +85,8 @@ public class EmailRemoteDataSource implements EmailDataSource {
                 Email emailDetail = new Email();
                 //仅支持imap
                 emailDetail.setRead(message.getFlags().contains(Flags.Flag.SEEN));
-//                dumpPart(message, emailDetail);
-                dumpEnvelope(message, emailDetail);
+                dumpPart(message, emailDetail);
+//                dumpEnvelope(message, emailDetail);
                 data.add(emailDetail);
             }
             //排序
@@ -248,71 +251,71 @@ public class EmailRemoteDataSource implements EmailDataSource {
         return simpleDateFormat.format(date);
     }
 
-    public static void dumpPart(Part p, Email data) throws Exception {
-        if (p instanceof Message)
-            dumpEnvelope((Message) p, data);
-
-        String filename = p.getFileName();
-        if (filename != null)
-            data.setHasAttach(true);
-
-        /*
-         * Using isMimeType to determine the content type avoids
-         * fetching the actual content data until we need it.
-         */
-        if (p.isMimeType("text/plain")) {
+    public static void dumpPart(Part p, Email data) {
+        try {
+            if (p instanceof Message) {
+                dumpEnvelope((Message) p, data);
+                Log.i("mango", ((Message) p).getMessageNumber() + "    MimeType:" + p.getContentType());
+            }
+            if (p.isMimeType("text/plain")) {
 //            This is plain text
-            data.setContent((String) p.getContent());
-            System.out.println((String) p.getContent());
-        } else if (p.isMimeType("multipart/*")) {
+                data.setContent((String) p.getContent());
+//            System.out.println((String) p.getContent());
+            } else if (p.isMimeType("multipart/*")) {
 //            This is a Multipart
-            Multipart mp = (Multipart) p.getContent();
-            level++;
-            int count = mp.getCount();
-            for (int i = 0; i < count; i++)
-                dumpPart(mp.getBodyPart(i), data);
-            level--;
-        } else if (p.isMimeType("message/rfc822")) {
+                Multipart mp = (Multipart) p.getContent();
+                level++;
+                int count = mp.getCount();
+                for (int i = 0; i < count; i++)
+                    dumpPart(mp.getBodyPart(i), data);
+                level--;
+            } else if (p.isMimeType("message/rfc822")) {
 //            This is a Nested Message
-            level++;
-            dumpPart((Part) p.getContent(), data);
-            level--;
-        } else {
-            if (!showStructure && !saveAttachments) {
-                /*
-                 * If we actually want to see the data, and it's not a
-                 * MIME type we know, fetch it and check its Java type.
-                 */
-                Object o = p.getContent();
-                if (o instanceof String) {
-//                    This is a string
-                    System.out.println((String) o);
-                } else if (o instanceof InputStream) {
-//                    This is just an input stream
-                    InputStream is = (InputStream) o;
-                } else {
-//                    "This is an unknown type"
-                }
+                level++;
+                dumpPart((Part) p.getContent(), data);
+                level--;
             } else {
-                // other
+                if (!showStructure && !saveAttachments) {
+                    /*
+                     * If we actually want to see the data, and it's not a
+                     * MIME type we know, fetch it and check its Java type.
+                     */
+                    Object o = p.getContent();
+                    if (o instanceof String) {
+//                    This is a string
+                        System.out.println((String) o);
+                        data.setContent((String) p.getContent());
+                    } else if (o instanceof InputStream) {
+//                    This is just an input stream
+                        InputStream is = (InputStream) o;
+                    } else {
+//                    "This is an unknown type"
+                    }
+                } else {
+                    // other
+                }
             }
-        }
-
-        /*
-         * If we're saving attachments, write out anything that
-         * looks like an attachment into an appropriately named
-         * file.  Don't overwrite existing files to prevent
-         * mistakes.
-         */
-        if (level != 0 && p instanceof MimeBodyPart &&
-                !p.isMimeType("multipart/*")) {
-            String disp = p.getDisposition();
-            // many mailers don't include a Content-Disposition
-            if (disp == null || disp.equalsIgnoreCase(Part.ATTACHMENT)) {
-                if (filename == null)
-                    filename = "Attachment" + attnum++;
-
+            if (level != 0 && p instanceof MimeBodyPart &&
+                    !p.isMimeType("multipart/*")) {
+                String disp = p.getDisposition();
+                // many mailers don't include a Content-Disposition
+                if (disp != null && disp.equalsIgnoreCase(Part.ATTACHMENT)) {
+                    String filename = p.getFileName();
+                    if (filename != null)
+                        data.setHasAttach(true);
+                }
             }
+        } catch (MessagingException e) {
+            try {
+                data.setContent((String) p.getContent());
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            } catch (MessagingException e1) {
+                e1.printStackTrace();
+            }
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -343,8 +346,6 @@ public class EmailRemoteDataSource implements EmailDataSource {
             data.setBcc(sbBcc.toString());
         }
         InternetAddress address = (InternetAddress) message.getFrom()[0];
-
-
         data.setFrom(address.getAddress());
         data.setPersonal(address.getPersonal());
         data.setSubject(message.getSubject());

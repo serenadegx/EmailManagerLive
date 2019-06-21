@@ -37,7 +37,7 @@
 
         <TextView
             android:id="@+id/tv_from"
-            android:layout_width="180dp"
+            android:layout_width="160dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
@@ -48,6 +48,15 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintLeft_toRightOf="@id/v"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/icon_has_attach"
+            android:visibility="@{item.hasAttach ? View.VISIBLE : View.INVISIBLE}"
+            app:layout_constraintBottom_toBottomOf="@id/tv_from"
+            app:layout_constraintLeft_toRightOf="@id/tv_from"
+            app:layout_constraintTop_toTopOf="@id/tv_from" />
 
         <TextView
             android:id="@+id/tv_subject"
