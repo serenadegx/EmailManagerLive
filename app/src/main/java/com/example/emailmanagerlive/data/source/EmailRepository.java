@@ -59,11 +59,11 @@ public class EmailRepository implements EmailDataSource {
         mRemoteDataSource.getEmail(account, id, callBack);
     }
 
-    public void getSentEmail(Account account, long id, final GetEmailCallBack callBack){
+    public void getSentEmail(Account account, long id, final GetEmailCallBack callBack) {
         mRemoteDataSource.getSentEmail(account, id, callBack);
     }
 
-    public void getDraft(Account account, long id, final GetEmailCallBack callBack){
+    public void getDraft(Account account, long id, final GetEmailCallBack callBack) {
         mRemoteDataSource.getDraft(account, id, callBack);
     }
 
@@ -81,6 +81,14 @@ public class EmailRepository implements EmailDataSource {
                 callBack.onError();
             }
         });
+    }
+
+    public void deleteByType(Account account, long id, int type, CallBack callBack) {
+        if (type == 1) {
+            delete(account, id, callBack);
+        } else{
+            mRemoteDataSource.deleteByType(account,id,type,callBack);
+        }
     }
 
     /**

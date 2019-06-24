@@ -145,7 +145,7 @@ public class EmailViewModel extends ViewModel implements EmailDataSource.GetEmai
         new Thread() {
             @Override
             public void run() {
-                mRepository.delete(mAccount, id, new EmailDataSource.CallBack() {
+                mRepository.deleteByType(mAccount, id, type, new EmailDataSource.CallBack() {
                     @Override
                     public void onSuccess() {
                         snackBarText.postValue(new Event<>("删除成功"));

@@ -403,6 +403,50 @@ public class EmailRemoteDataSource implements EmailDataSource {
         }
     }
 
+    public void deleteByType(final Account account, long id, int type, CallBack callBack) {
+        Properties props = System.getProperties();
+        props.put(account.getConfig().getReceiveHostKey(), account.getConfig().getReceiveHostValue());
+        props.put(account.getConfig().getReceivePortKey(), account.getConfig().getReceivePortValue());
+        props.put(account.getConfig().getReceiveEncryptKey(), account.getConfig().getReceiveEncryptValue());
+        Session session = Session.getInstance(props, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(
+                        account.getAccount(), account.getPwd());
+            }
+        });
+//        session.setDebug(true);
+        Store store = null;
+        Folder inbox = null;
+        try {
+            store = session.getStore(account.getConfig().getReceiveProtocol());
+            store.connect();
+            if (type == 2) {
+                inbox = store.getFolder("Sent Messages");
+            } else {
+                inbox = store.getFolder("Drafts");
+            }
+            inbox.open(Folder.READ_WRITE);
+            Message message = inbox.getMessage((int) id);
+            message.setFlag(Flags.Flag.DELETED, true);
+            callBack.onSuccess();
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        } catch (MessagingException e) {
+            callBack.onError();
+            e.printStackTrace();
+        } finally {
+            try {
+                if (inbox != null)
+                    inbox.close();
+                if (store != null)
+                    store.close();
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public void save2Drafts(Account account, Email data, CallBack callBack) {
 
     }
@@ -651,6 +695,7 @@ public class EmailRemoteDataSource implements EmailDataSource {
             return String.valueOf((size / 100)) + "."
                     + String.valueOf((size * 100 / 1024 % 100)) + "MB";
         } else {
+
             //否则如果要以GB为单位的，先除于1024再作同样的处理
             size = size * 100 / 1024;
             return String.valueOf((size / 100)) + "."
@@ -662,5 +707,4 @@ public class EmailRemoteDataSource implements EmailDataSource {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return simpleDateFormat.format(date);
     }
-
 }
