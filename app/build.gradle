@@ -48,8 +48,6 @@ dependencies {
 
     //数据库配置
     implementation 'org.greenrobot:greendao:3.2.2'
-//    //WebView配置
-//    implementation 'com.github.serenadegx:XRWebview:1.1.3'
 //    //文件选择
     implementation 'com.github.serenadegx:XRMultiFile:1.0.0'
 }

@@ -10,6 +10,12 @@ public class Attachment extends BaseObservable {
     private long total;
     private boolean isDownload;
 
+    public Attachment(String fileName, String size, long total) {
+        this.fileName = fileName;
+        this.size = size;
+        this.total = total;
+    }
+
     @Bindable
     public String getFileName() {
         return fileName;

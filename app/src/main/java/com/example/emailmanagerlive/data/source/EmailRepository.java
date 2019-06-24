@@ -1,15 +1,12 @@
 package com.example.emailmanagerlive.data.source;
 
-import android.util.Log;
-
 import com.example.emailmanagerlive.EmailApplication;
 import com.example.emailmanagerlive.data.Account;
 import com.example.emailmanagerlive.data.Email;
 import com.example.emailmanagerlive.data.source.local.EmailLocalDataSource;
 import com.example.emailmanagerlive.data.source.remote.EmailRemoteDataSource;
-import com.example.emailmanagerlive.emails.drafts.DraftsViewModel;
-import com.example.emailmanagerlive.emails.sent.SentViewModel;
 
+import java.io.File;
 import java.util.List;
 
 public class EmailRepository implements EmailDataSource {
@@ -59,12 +56,31 @@ public class EmailRepository implements EmailDataSource {
 
     @Override
     public void getEmail(Account account, long id, final GetEmailCallBack callBack) {
-
+        mRemoteDataSource.getEmail(account, id, callBack);
     }
 
-    @Override
-    public void delete(Account account, long id, CallBack callBack) {
+    public void getSentEmail(Account account, long id, final GetEmailCallBack callBack){
+        mRemoteDataSource.getSentEmail(account, id, callBack);
+    }
 
+    public void getDraft(Account account, long id, final GetEmailCallBack callBack){
+        mRemoteDataSource.getDraft(account, id, callBack);
+    }
+
+
+    @Override
+    public void delete(final Account account, final long id, final CallBack callBack) {
+        mRemoteDataSource.delete(account, id, new CallBack() {
+            @Override
+            public void onSuccess() {
+                mLocalDataSource.delete(account, id, callBack);
+            }
+
+            @Override
+            public void onError() {
+                callBack.onError();
+            }
+        });
     }
 
     /**
@@ -92,6 +108,10 @@ public class EmailRepository implements EmailDataSource {
      */
     public void loadDrafts(Account account, GetEmailsCallBack callBack) {
         mRemoteDataSource.getDrafts(account, callBack);
+    }
+
+    public void download(Account account, File file, long id, int index, long total, DownloadCallback callback) {
+        mRemoteDataSource.downloadAttachment(account, file, id, index, total, callback);
     }
 
     private void getEmailsFromRemoteDataSource(Account detail, final GetEmailsCallBack callBack) {

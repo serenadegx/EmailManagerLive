@@ -27,6 +27,15 @@ public interface EmailDataSource {
         void onDataNotAvailable();
     }
 
+    interface DownloadCallback {
+
+        void onProgress(float percent);
+
+        void onFinish();
+
+        void onError();
+    }
+
     void getEmails(Account account, GetEmailsCallBack callBack);
 
     void getEmail(Account account, long id, GetEmailCallBack callBack);

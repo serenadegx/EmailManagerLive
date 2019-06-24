@@ -39,113 +39,53 @@
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:layout_margin="6dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text='@{"收件人："+viewModel.receivers}'
+                    android:textColor="@android:color/black" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="6dp"
-                        android:text="收件人："
-                        android:textColor="@android:color/black" />
-
-                    <TextView
-                        android:id="@+id/tv_receiver"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@{viewModel.receivers}"
-                        android:textColor="@android:color/black" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:visibility="@{viewModel.isCc ? View.VISIBLE : View.GONE}">
+                    android:layout_margin="6dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text='@{"抄送人："+viewModel.cc}'
+                    android:textColor="@android:color/black"
+                    android:visibility="@{viewModel.isCc ? View.VISIBLE : View.GONE}" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="6dp"
-                        android:text="抄送人："
-                        android:textColor="@android:color/black" />
-
-                    <TextView
-                        android:id="@+id/tv_bcc"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@{viewModel.cc}"
-                        android:textColor="@android:color/black" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:visibility="@{viewModel.isBcc ? View.VISIBLE : View.GONE}">
+                    android:layout_margin="6dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text='@{"密送人："+viewModel.bcc}'
+                    android:textColor="@android:color/black"
+                    android:visibility="@{viewModel.isBcc ? View.VISIBLE : View.GONE}" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="6dp"
-                        android:text="密送人："
-                        android:textColor="@android:color/black" />
-
-                    <TextView
-                        android:id="@+id/tv_copy"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@{viewModel.bcc}"
-                        android:textColor="@android:color/black" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:layout_margin="6dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text='@{"主题："+viewModel.subject}'
+                    android:textColor="@android:color/black" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="6dp"
-                        android:text="主题："
-                        android:textColor="@android:color/black" />
-
-                    <TextView
-                        android:id="@+id/tv_subject"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@{viewModel.subject}"
-                        android:textColor="@android:color/black" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="6dp"
-                        android:text="时间："
-                        android:textColor="@android:color/black" />
-
-                    <TextView
-                        android:id="@+id/tv_date"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@{viewModel.date}"
-                        android:textColor="@android:color/black" />
-                </LinearLayout>
-
+                    android:layout_margin="6dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text='@{"时间："+viewModel.date}'
+                    android:textColor="@android:color/black" />
 
                 <LinearLayout
                     android:id="@+id/ll_accessory"
@@ -162,12 +102,11 @@
                         android:visibility="@{viewModel.isAttach ? View.VISIBLE : View.GONE}" />
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rv_accessory"
+                        android:id="@+id/rv_attachment"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="6dp"
-                        android:layout_marginRight="6dp"
-                        android:items="@{viewModel.mItems}"
+                        android:items="@{viewModel.items}"
+                        android:scrollbars="none"
                         tools:listitem="@layout/item_attachment" />
                 </LinearLayout>
 
@@ -175,8 +114,6 @@
                     android:id="@+id/webView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="6dp"
-                    android:layout_marginRight="6dp"
                     android:html="@{viewModel.html}"
                     android:scrollbars="none" />
             </LinearLayout>

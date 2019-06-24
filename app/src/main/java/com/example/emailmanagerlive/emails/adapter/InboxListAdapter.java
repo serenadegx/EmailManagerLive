@@ -11,11 +11,13 @@ import androidx.lifecycle.LifecycleOwner;
 import com.example.emailmanagerlive.BR;
 import com.example.emailmanagerlive.R;
 import com.example.emailmanagerlive.data.Email;
+import com.example.emailmanagerlive.emaildetail.EmailDetailActivity;
 import com.example.emailmanagerlive.utils.BaseAdapter;
 import com.example.emailmanagerlive.utils.BaseViewHolder;
 
 public class InboxListAdapter extends BaseAdapter<Email, BaseViewHolder> {
     private LifecycleOwner mLifecycleOwner;
+
     public InboxListAdapter(Context context, LifecycleOwner activity) {
         super(context);
         mLifecycleOwner = activity;
@@ -39,6 +41,6 @@ public class InboxListAdapter extends BaseAdapter<Email, BaseViewHolder> {
     }
 
     public void goNext(Email item, int position) {
-
+        EmailDetailActivity.start2EmailDetailActivity(mContext, item.getId(),EmailDetailActivity.INBOX);
     }
 }

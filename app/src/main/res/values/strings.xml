@@ -13,6 +13,8 @@
     <string name="menu_tools">设置</string>
     <string name="menu_share">分享</string>
     <string name="menu_send">Send</string>
+    <string name="bt_download">下载</string>
+    <string name="bt_open">打开</string>
     <!--qq邮箱配置-->
     <string-array name="qq_email">
         <item>qq邮箱</item>
