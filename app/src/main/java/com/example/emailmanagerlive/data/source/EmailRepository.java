@@ -67,7 +67,6 @@ public class EmailRepository implements EmailDataSource {
         mRemoteDataSource.getDraft(account, id, callBack);
     }
 
-
     @Override
     public void delete(final Account account, final long id, final CallBack callBack) {
         mRemoteDataSource.delete(account, id, new CallBack() {
@@ -116,6 +115,10 @@ public class EmailRepository implements EmailDataSource {
      */
     public void loadDrafts(Account account, GetEmailsCallBack callBack) {
         mRemoteDataSource.getDrafts(account, callBack);
+    }
+
+    public void send(Account account,Email email,CallBack callBack){
+        mRemoteDataSource.send(account, email, callBack);
     }
 
     public void download(Account account, File file, long id, int index, long total, DownloadCallback callback) {

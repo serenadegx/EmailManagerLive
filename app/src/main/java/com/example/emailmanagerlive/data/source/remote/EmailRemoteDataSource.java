@@ -6,6 +6,7 @@ import com.example.emailmanagerlive.data.Account;
 import com.example.emailmanagerlive.data.Attachment;
 import com.example.emailmanagerlive.data.Email;
 import com.example.emailmanagerlive.data.source.EmailDataSource;
+import com.sun.mail.smtp.SMTPTransport;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,10 +29,13 @@ import javax.mail.Multipart;
 import javax.mail.NoSuchProviderException;
 import javax.mail.Part;
 import javax.mail.PasswordAuthentication;
+import javax.mail.SendFailedException;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
 public class EmailRemoteDataSource implements EmailDataSource {
@@ -350,8 +354,76 @@ public class EmailRemoteDataSource implements EmailDataSource {
         }
     }
 
-    public void send(Account account, Email email, CallBack callBack) {
+    public void send(final Account account, Email email, CallBack callBack) {
+        Properties props = System.getProperties();
+        props.put(account.getConfig().getSendHostKey(), account.getConfig().getSendHostValue());
+        props.put(account.getConfig().getSendPortKey(), account.getConfig().getSendPortValue());
+        props.put(account.getConfig().getSendEncryptKey(), account.getConfig().getSendEncryptValue());
+        props.put(account.getConfig().getAuthKey(), account.getConfig().getAuthValue());
+        Session session = Session.getInstance(props, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(
+                        account.getAccount(), account.getPwd());
+            }
+        });
+        SMTPTransport t = null;
+        try {
+            Message msg = new MimeMessage(session);
+            if (email.getFrom() != null) {
+                try {
+                    msg.setFrom(new InternetAddress(email.getFrom(), "serenade"));
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                }
+            }
+            msg.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(email.getTo(), false));
+            if (email.getCc() != null)
+                //抄送人
+                msg.setRecipients(Message.RecipientType.CC,
+                        InternetAddress.parse(email.getCc(), false));
+            if (email.getBcc() != null)
+                //秘密抄送人
+                msg.setRecipients(Message.RecipientType.BCC,
+                        InternetAddress.parse(email.getBcc(), false));
 
+            msg.setSubject(email.getSubject());
+
+            MimeMultipart mp = new MimeMultipart();
+            MimeBodyPart mbp1 = new MimeBodyPart();
+            mbp1.setText(email.getContent());
+            mp.addBodyPart(mbp1);
+            if (email.getAttachments() != null && email.getAttachments().size() > 0) {
+                for (Attachment detail1 : email.getAttachments()) {
+                    MimeBodyPart mbp2 = new MimeBodyPart();
+                    mbp2.attachFile(detail1.getPath());
+                    mp.addBodyPart(mbp2);
+                }
+            }
+            msg.setContent(mp);
+            msg.setSentDate(new Date());
+            t = (SMTPTransport) session.getTransport(account.getConfig().getSendProtocol());
+            t.connect();
+            t.sendMessage(msg, msg.getAllRecipients());
+            callBack.onSuccess();
+        } catch (SendFailedException e) {
+            e.printStackTrace();
+            callBack.onError();
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (t != null)
+                    t.close();
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void reply(Account account, Email email, CallBack callBack) {

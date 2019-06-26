@@ -1,5 +1,8 @@
 package com.example.emailmanagerlive.data;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 
@@ -12,7 +15,7 @@ import java.util.List;
 import org.greenrobot.greendao.annotation.Generated;
 
 @Entity
-public class Email extends BaseObservable {
+public class Email extends BaseObservable implements Parcelable {
     @Id
     private Long id;
     private boolean isRead;
@@ -48,6 +51,36 @@ public class Email extends BaseObservable {
     @Generated(hash = 272676561)
     public Email() {
     }
+
+    protected Email(Parcel in) {
+        if (in.readByte() == 0) {
+            id = null;
+        } else {
+            id = in.readLong();
+        }
+        isRead = in.readByte() != 0;
+        subject = in.readString();
+        date = in.readString();
+        from = in.readString();
+        personal = in.readString();
+        to = in.readString();
+        cc = in.readString();
+        bcc = in.readString();
+        content = in.readString();
+        hasAttach = in.readByte() != 0;
+    }
+
+    public static final Creator<Email> CREATOR = new Creator<Email>() {
+        @Override
+        public Email createFromParcel(Parcel in) {
+            return new Email(in);
+        }
+
+        @Override
+        public Email[] newArray(int size) {
+            return new Email[size];
+        }
+    };
 
     public Long getId() {
         return id;
@@ -169,4 +202,28 @@ public class Email extends BaseObservable {
         this.isRead = isRead;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(id);
+        }
+        dest.writeByte((byte) (isRead ? 1 : 0));
+        dest.writeString(subject);
+        dest.writeString(date);
+        dest.writeString(from);
+        dest.writeString(personal);
+        dest.writeString(to);
+        dest.writeString(cc);
+        dest.writeString(bcc);
+        dest.writeString(content);
+        dest.writeByte((byte) (hasAttach ? 1 : 0));
+    }
 }

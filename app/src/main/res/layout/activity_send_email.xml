@@ -55,7 +55,6 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="4"
-                        android:addTextChangedListener="@{viewModel.watcherReceiver}"
                         android:text="@={viewModel.receiver}" />
                 </LinearLayout>
 
@@ -86,7 +85,6 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="4"
-                        android:addTextChangedListener="@{viewModel.watcherCopy}"
                         android:text="@={viewModel.copy}" />
                 </LinearLayout>
 
@@ -117,7 +115,6 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="4"
-                        android:addTextChangedListener="@{viewModel.watcherSecret}"
                         android:text="@={viewModel.secret}" />
                 </LinearLayout>
 
@@ -148,7 +145,6 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="4"
-                        android:addTextChangedListener="@{viewModel.watcherSend}"
                         android:text="@={viewModel.send}" />
                 </LinearLayout>
 
@@ -190,7 +186,7 @@
                     android:background="@android:color/darker_gray" />
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_accessory"
+                    android:id="@+id/rv_attachment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:items="@{viewModel.items}"
