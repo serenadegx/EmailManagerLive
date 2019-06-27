@@ -5,6 +5,7 @@ import com.example.emailmanagerlive.data.Account;
 import com.example.emailmanagerlive.data.Email;
 import com.example.emailmanagerlive.data.source.local.EmailLocalDataSource;
 import com.example.emailmanagerlive.data.source.remote.EmailRemoteDataSource;
+import com.example.emailmanagerlive.send.SendEmailViewModel;
 
 import java.io.File;
 import java.util.List;
@@ -85,8 +86,8 @@ public class EmailRepository implements EmailDataSource {
     public void deleteByType(Account account, long id, int type, CallBack callBack) {
         if (type == 1) {
             delete(account, id, callBack);
-        } else{
-            mRemoteDataSource.deleteByType(account,id,type,callBack);
+        } else {
+            mRemoteDataSource.deleteByType(account, id, type, callBack);
         }
     }
 
@@ -117,8 +118,30 @@ public class EmailRepository implements EmailDataSource {
         mRemoteDataSource.getDrafts(account, callBack);
     }
 
-    public void send(Account account,Email email,CallBack callBack){
+    /**
+     * 发送邮件
+     *
+     * @param account
+     * @param email
+     * @param callBack
+     */
+    public void send(Account account, Email email, CallBack callBack) {
         mRemoteDataSource.send(account, email, callBack);
+    }
+
+    /**
+     * 回复
+     *
+     * @param account
+     * @param email
+     * @param callBack
+     */
+    public void reply(Account account, Email email, CallBack callBack) {
+        mRemoteDataSource.reply(account, email, callBack);
+    }
+
+    public void save2Drafts(Account account, Email data, CallBack callBack){
+        mRemoteDataSource.save2Drafts(account, data, callBack);
     }
 
     public void download(Account account, File file, long id, int index, long total, DownloadCallback callback) {

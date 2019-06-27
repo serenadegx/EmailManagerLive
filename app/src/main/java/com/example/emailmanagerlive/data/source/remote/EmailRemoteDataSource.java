@@ -2,6 +2,8 @@ package com.example.emailmanagerlive.data.source.remote;
 
 import android.util.Log;
 
+import androidx.core.app.NavUtils;
+
 import com.example.emailmanagerlive.data.Account;
 import com.example.emailmanagerlive.data.Attachment;
 import com.example.emailmanagerlive.data.Email;
@@ -13,12 +15,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import javax.activation.DataHandler;
 import javax.mail.Address;
 import javax.mail.Authenticator;
 import javax.mail.Flags;
@@ -37,6 +41,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
+import javax.mail.util.ByteArrayDataSource;
 
 public class EmailRemoteDataSource implements EmailDataSource {
     private static EmailRemoteDataSource INSTANCE;
@@ -426,8 +431,86 @@ public class EmailRemoteDataSource implements EmailDataSource {
         }
     }
 
-    public void reply(Account account, Email email, CallBack callBack) {
+    public void reply(final Account account, Email email, CallBack callBack) {
+        Properties props = System.getProperties();
+        props.put(account.getConfig().getSendHostKey(), account.getConfig().getSendHostValue());
+        props.put(account.getConfig().getSendPortKey(), account.getConfig().getSendPortValue());
+        props.put(account.getConfig().getSendEncryptKey(), account.getConfig().getSendEncryptValue());
+        props.put(account.getConfig().getAuthKey(), account.getConfig().getAuthValue());
+        Session session = Session.getInstance(props, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(
+                        account.getAccount(), account.getPwd());
+            }
+        });
+        Folder folder = null;
+        Store store = null;
+        SMTPTransport t = null;
+        try {
+            store = session.getStore(account.getConfig().getReceiveProtocol());
+            store.connect();
+            folder = store.getFolder("inbox");
+            folder.open(Folder.READ_ONLY);
+            Message message = folder.getMessage((int) email.getId().longValue());
+            Message forward = new MimeMessage(session);
+            if (email.getFrom() != null) {
+                forward.setFrom(new InternetAddress(email.getFrom(), "serenade"));
+            }
 
+            forward.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(email.getTo(), false));
+            if (email.getCc() != null)
+                //抄送人
+                forward.setRecipients(Message.RecipientType.CC,
+                        InternetAddress.parse(email.getCc(), false));
+            if (email.getBcc() != null)
+                //秘密抄送人
+                forward.setRecipients(Message.RecipientType.BCC,
+                        InternetAddress.parse(email.getBcc(), false));
+
+            forward.setSubject(email.getSubject());
+
+            MimeMultipart mp = new MimeMultipart();
+            MimeBodyPart mbp1 = new MimeBodyPart();
+            mbp1.setDataHandler(collect(email, message));
+            mp.addBodyPart(mbp1);
+            if (email.getAttachments() != null && email.getAttachments().size() > 0) {
+                for (Attachment detail1 : email.getAttachments()) {
+                    MimeBodyPart mbp2 = new MimeBodyPart();
+                    mbp2.attachFile(detail1.getPath());
+                    mp.addBodyPart(mbp2);
+                }
+            }
+            forward.setContent(mp);
+            forward.saveChanges();
+            forward.setSentDate(new Date());
+            t = (SMTPTransport) session.getTransport(account.getConfig().getSendProtocol());
+            t.connect();
+            t.sendMessage(forward, forward.getAllRecipients());
+            callBack.onSuccess();
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        } catch (MessagingException e) {
+            callBack.onError();
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            callBack.onError();
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (t != null)
+                    t.close();
+                if (folder != null)
+                    folder.close();
+                if (store != null)
+                    store.close();
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void forward(Account account, Email email, CallBack callBack) {
@@ -519,8 +602,81 @@ public class EmailRemoteDataSource implements EmailDataSource {
         }
     }
 
-    public void save2Drafts(Account account, Email data, CallBack callBack) {
+    public void save2Drafts(final Account account, Email data, CallBack callBack) {
+        Properties props = System.getProperties();
+        props.put(account.getConfig().getReceiveHostKey(), account.getConfig().getReceiveHostValue());
+        props.put(account.getConfig().getReceivePortKey(), account.getConfig().getReceivePortValue());
+        props.put(account.getConfig().getReceiveEncryptKey(), account.getConfig().getReceiveEncryptValue());
+        Session session = Session.getInstance(props, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(
+                        account.getAccount(), account.getPwd());
+            }
+        });
+        session.setDebug(true);
+        MimeMessage msg = new MimeMessage(session);
+        Folder drafts = null;
+        Store store = null;
+        try {
+            //打开草稿箱
+            store = session.getStore(account.getConfig().getReceiveProtocol());
+            store.connect();
+            drafts = store.getFolder("Drafts");
 
+            if (data.getFrom() != null) {
+                msg.setFrom(new InternetAddress(data.getFrom(), "果心蕊菜牙xr"));
+            }
+            msg.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(data.getTo(), false));
+            if (data.getCc() != null)
+                //抄送人
+                msg.setRecipients(Message.RecipientType.CC,
+                        InternetAddress.parse(data.getCc(), false));
+            if (data.getBcc() != null)
+                //秘密抄送人
+                msg.setRecipients(Message.RecipientType.BCC,
+                        InternetAddress.parse(data.getBcc(), false));
+
+            msg.setSubject(data.getSubject());
+
+            MimeMultipart mp = new MimeMultipart();
+            MimeBodyPart mbp1 = new MimeBodyPart();
+            mbp1.setText(data.getContent());
+            mp.addBodyPart(mbp1);
+            if (data.getAttachments() != null && data.getAttachments().size() > 0) {
+                for (Attachment detail1 : data.getAttachments()) {
+                    MimeBodyPart mbp2 = new MimeBodyPart();
+                    mbp2.attachFile(detail1.getPath());
+                    mp.addBodyPart(mbp2);
+                }
+            }
+            msg.setContent(mp);
+            msg.setSentDate(new Date());
+
+            //保存到草稿箱
+            msg.saveChanges();
+            msg.setFlag(Flags.Flag.DRAFT, true);
+            MimeMessage[] draftMessages = {msg};
+            drafts.appendMessages(draftMessages);
+            callBack.onSuccess();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            callBack.onError();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+//                if (drafts!=null)
+//                    drafts.close();
+                if (store != null)
+                    store.close();
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void downloadAttachment(final Account account, File file, long id, int index, long total, DownloadCallback callback) {
@@ -567,6 +723,43 @@ public class EmailRemoteDataSource implements EmailDataSource {
                 e.printStackTrace();
             }
         }
+    }
+
+    private static DataHandler collect(Email data, Message msg) throws MessagingException, IOException {
+        StringBuilder sb = new StringBuilder();
+        sb.append(data.getAppend() + "<br>");
+        sb.append("<div style=\"line-height:1.5\"><br><br>-------- 原始邮件 --------<br>");
+        sb.append("主题：" + msg.getSubject() + "<br>");
+        sb.append("发件人：" + ((InternetAddress) msg.getFrom()[0]).getAddress() + "<br>");
+
+        if (msg.getRecipients(Message.RecipientType.TO) != null) {
+            sb.append("收件人：");
+            for (Address recipient : msg.getRecipients(Message.RecipientType.TO)) {
+                sb.append(((InternetAddress) recipient).getAddress() + ";");
+            }
+            sb.append("<br>");
+        }
+
+        if (msg.getRecipients(Message.RecipientType.CC) != null) {
+            sb.append("抄送：");
+            for (Address recipient : msg.getRecipients(Message.RecipientType.CC)) {
+                sb.append(((InternetAddress) recipient).getAddress() + ";");
+            }
+            sb.append("<br>");
+        }
+
+        if (msg.getRecipients(Message.RecipientType.BCC) != null) {
+            sb.append("密送：");
+            for (Address recipient : msg.getRecipients(Message.RecipientType.BCC)) {
+                sb.append(((InternetAddress) recipient).getAddress() + ";");
+            }
+            sb.append("<br>");
+        }
+        sb.append("发件时间：" + dateFormat(msg.getReceivedDate()) + "<br>");
+        sb.append("</div><br>");
+        sb.append(data.getContent());
+        return new DataHandler(
+                new ByteArrayDataSource(sb.toString(), "text/html"));
     }
 
     private static void realDownload(File file, long total, InputStream is, DownloadCallback callback) {
@@ -711,7 +904,7 @@ public class EmailRemoteDataSource implements EmailDataSource {
         }
     }
 
-    private static void dumpEnvelope(Message message, Email data) throws MessagingException {
+    private static void dumpEnvelope(Message message, Email data) throws MessagingException, UnsupportedEncodingException {
         data.setId((long) message.getMessageNumber());
         Address[] recipients = message.getRecipients(Message.RecipientType.TO);
         if (recipients != null) {
@@ -740,7 +933,7 @@ public class EmailRemoteDataSource implements EmailDataSource {
         InternetAddress address = (InternetAddress) message.getFrom()[0];
         data.setFrom(address.getAddress());
         data.setPersonal(address.getPersonal());
-        data.setSubject(message.getSubject());
+        data.setSubject(MimeUtility.decodeText(message.getHeader("subject")[0]));
         data.setDate(dateFormat(message.getReceivedDate()));
     }
 

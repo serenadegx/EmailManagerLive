@@ -63,6 +63,7 @@
             android:layout_margin="10dp"
             android:onClick="@{() -> adapter.delete(item,position)}"
             android:text="删除"
+            android:textColor="@android:color/black"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

@@ -38,6 +38,7 @@ public class SendEmailActivity extends AppCompatActivity implements SendEmailNav
     private ActivitySendEmailBinding binding;
     private SendEmailViewModel viewModel;
     private ProgressDialog dialog;
+    private AttachmentListAdapter listAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -136,10 +137,11 @@ public class SendEmailActivity extends AppCompatActivity implements SendEmailNav
         viewModel.setNavigator(this);
         binding.setViewModel(viewModel);
         binding.setLifecycleOwner(this);
+        listAdapter.setViewModel(viewModel);
     }
 
     private void setupAdapter() {
-        AttachmentListAdapter listAdapter = new AttachmentListAdapter(this, this);
+        listAdapter = new AttachmentListAdapter(this, this);
         binding.rvAttachment.setAdapter(listAdapter);
     }
 

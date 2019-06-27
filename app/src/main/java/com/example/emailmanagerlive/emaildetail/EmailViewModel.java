@@ -8,6 +8,7 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -17,6 +18,7 @@ import com.example.emailmanagerlive.data.Attachment;
 import com.example.emailmanagerlive.data.Email;
 import com.example.emailmanagerlive.data.source.EmailDataSource;
 import com.example.emailmanagerlive.data.source.EmailRepository;
+import com.example.emailmanagerlive.send.SendEmailActivity;
 
 import java.io.File;
 import java.util.List;
@@ -42,6 +44,7 @@ public class EmailViewModel extends ViewModel implements EmailDataSource.GetEmai
     private long id;
     private EmailDetailNavigator mNavigator;
     private int type;
+    private Email email;
 
     public EmailViewModel(EmailRepository mRepository, Account account, Context context) {
         this.mRepository = mRepository;
@@ -58,6 +61,7 @@ public class EmailViewModel extends ViewModel implements EmailDataSource.GetEmai
 
     @Override
     public void onEmailLoaded(Email email) {
+        this.email = email;
         if (type == EmailDetailActivity.INBOX) {
             title.postValue(TextUtils.isEmpty(email.getPersonal()) ? email.getFrom() : email.getPersonal());
         } else if (type == EmailDetailActivity.SENT) {
@@ -109,11 +113,13 @@ public class EmailViewModel extends ViewModel implements EmailDataSource.GetEmai
     }
 
     public void reply(View view) {
-
+        if (email != null)
+            SendEmailActivity.start2SendEmailActivity(mContext, SendEmailActivity.REPLY, email);
     }
 
     public void forward(View view) {
-
+        if (email != null)
+            SendEmailActivity.start2SendEmailActivity(mContext, SendEmailActivity.FORWARD, email);
     }
 
     public void delete(View view) {

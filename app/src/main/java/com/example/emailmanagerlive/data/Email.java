@@ -27,6 +27,8 @@ public class Email extends BaseObservable implements Parcelable {
     private String cc;
     private String bcc;
     private String content;
+    @Transient
+    private String append;
     private boolean hasAttach;
     @Transient
     public List<Attachment> attachments;
@@ -146,6 +148,10 @@ public class Email extends BaseObservable implements Parcelable {
         return this.hasAttach;
     }
 
+    public String getAppend() {
+        return append;
+    }
+
     public List<Attachment> getAttachments() {
         return attachments;
     }
@@ -200,6 +206,10 @@ public class Email extends BaseObservable implements Parcelable {
 
     public void setIsRead(boolean isRead) {
         this.isRead = isRead;
+    }
+
+    public void setAppend(String append) {
+        this.append = append;
     }
 
     @Override
