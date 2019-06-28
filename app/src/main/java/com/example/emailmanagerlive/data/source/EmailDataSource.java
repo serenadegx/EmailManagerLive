@@ -29,11 +29,11 @@ public interface EmailDataSource {
 
     interface DownloadCallback {
 
-        void onProgress(float percent);
+        void onProgress(int index,float percent);
 
-        void onFinish();
+        void onFinish(int index);
 
-        void onError();
+        void onError(int index);
     }
 
     void getEmails(Account account, GetEmailsCallBack callBack);

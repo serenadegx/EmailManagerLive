@@ -55,21 +55,27 @@ public class SendEmailViewModel extends ViewModel implements EmailDataSource.Cal
                 attachment.setPath(str);
                 attachment.setFileName(str.substring(str.lastIndexOf("/") + 1));
                 attachment.setSize(getPrintSize(str));
+                attachment.setDownload(true);
+                attachment.setEnable(true);
                 mAttachments.add(attachment);
             }
             items.setValue(mAttachments);
         }
     }
 
+    void setNavigator(SendEmailNavigator navigator) {
+        this.mNavigator = navigator;
+    }
+
     @Override
     public void onSuccess() {
-        mNavigator.onSent();
         snackBarText.postValue(new Event<>("发送成功"));
+        mNavigator.onSent();
     }
 
     @Override
     public void onError() {
-        mNavigator.onSentError();
+        mNavigator.onError();
         snackBarText.postValue(new Event<>("发送失败"));
     }
 
@@ -131,11 +137,27 @@ public class SendEmailViewModel extends ViewModel implements EmailDataSource.Cal
     }
 
     public void forward() {
-
+        mNavigator.onSending("正在转发...");
+        final Email email = new Email();
+        email.setId(id);
+        email.setFrom(TextUtils.isEmpty(send.getValue()) ? null : send.getValue());
+        email.setTo(TextUtils.isEmpty(receiver.getValue()) ? null : receiver.getValue());
+        email.setCc(TextUtils.isEmpty(copy.getValue()) ? null : copy.getValue());
+        email.setBcc(TextUtils.isEmpty(secret.getValue()) ? null : secret.getValue());
+        email.setSubject(subject.getValue());
+        email.setAppend(content.getValue());
+        email.setContent(mContent);
+        email.setAttachments(items.getValue());
+        new Thread() {
+            @Override
+            public void run() {
+                mRepository.forward(mAccount, email, SendEmailViewModel.this);
+            }
+        }.start();
     }
 
     public void save2Drafts() {
-        mNavigator.onSending("正在保存...");
+        mNavigator.onSaving("正在保存...");
         final Email email = new Email();
         email.setFrom(TextUtils.isEmpty(send.getValue()) ? null : send.getValue());
         email.setTo(TextUtils.isEmpty(receiver.getValue()) ? null : receiver.getValue());
@@ -147,7 +169,18 @@ public class SendEmailViewModel extends ViewModel implements EmailDataSource.Cal
         new Thread() {
             @Override
             public void run() {
-                mRepository.save2Drafts(mAccount, email, SendEmailViewModel.this);
+                mRepository.save2Drafts(mAccount, email, new EmailDataSource.CallBack() {
+                    @Override
+                    public void onSuccess() {
+                        snackBarText.postValue(new Event<>("发送成功"));
+                        mNavigator.onSaved();
+                    }
+
+                    @Override
+                    public void onError() {
+                        mNavigator.onError();
+                    }
+                });
             }
         }.start();
     }
@@ -155,10 +188,6 @@ public class SendEmailViewModel extends ViewModel implements EmailDataSource.Cal
     public void delete(Attachment item) {
         mAttachments.remove(item);
         items.setValue(mAttachments);
-    }
-
-    void setNavigator(SendEmailNavigator navigator) {
-        this.mNavigator = navigator;
     }
 
     public MutableLiveData<Event<String>> getSnackBarText() {

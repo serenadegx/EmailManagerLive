@@ -10,12 +10,13 @@ import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Transient;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.greenrobot.greendao.annotation.Generated;
 
 @Entity
-public class Email extends BaseObservable implements Parcelable {
+public class Email extends BaseObservable implements Parcelable{
     @Id
     private Long id;
     private boolean isRead;
@@ -31,7 +32,7 @@ public class Email extends BaseObservable implements Parcelable {
     private String append;
     private boolean hasAttach;
     @Transient
-    public List<Attachment> attachments;
+    public List<Attachment> attachments = new ArrayList<>();
 
     @Generated(hash = 366761468)
     public Email(Long id, boolean isRead, String subject, String date, String from,
@@ -69,7 +70,9 @@ public class Email extends BaseObservable implements Parcelable {
         cc = in.readString();
         bcc = in.readString();
         content = in.readString();
+        append = in.readString();
         hasAttach = in.readByte() != 0;
+        attachments = in.createTypedArrayList(Attachment.CREATOR);
     }
 
     public static final Creator<Email> CREATOR = new Creator<Email>() {
@@ -234,6 +237,8 @@ public class Email extends BaseObservable implements Parcelable {
         dest.writeString(cc);
         dest.writeString(bcc);
         dest.writeString(content);
+        dest.writeString(append);
         dest.writeByte((byte) (hasAttach ? 1 : 0));
+        dest.writeTypedList(attachments);
     }
 }

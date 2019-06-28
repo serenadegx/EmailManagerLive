@@ -140,6 +140,10 @@ public class EmailRepository implements EmailDataSource {
         mRemoteDataSource.reply(account, email, callBack);
     }
 
+    public void forward(Account account, Email email, CallBack callBack){
+        mRemoteDataSource.forward(account, email, callBack);
+    }
+
     public void save2Drafts(Account account, Email data, CallBack callBack){
         mRemoteDataSource.save2Drafts(account, data, callBack);
     }

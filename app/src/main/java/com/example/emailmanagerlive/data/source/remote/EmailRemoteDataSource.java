@@ -2,8 +2,6 @@ package com.example.emailmanagerlive.data.source.remote;
 
 import android.util.Log;
 
-import androidx.core.app.NavUtils;
-
 import com.example.emailmanagerlive.data.Account;
 import com.example.emailmanagerlive.data.Attachment;
 import com.example.emailmanagerlive.data.Email;
@@ -514,7 +512,7 @@ public class EmailRemoteDataSource implements EmailDataSource {
     }
 
     public void forward(Account account, Email email, CallBack callBack) {
-
+        reply(account, email, callBack);
     }
 
     @Override
@@ -703,16 +701,16 @@ public class EmailRemoteDataSource implements EmailDataSource {
             Message message = inbox.getMessage((int) id);
             download(message, data);
             if (data.size() >= index) {
-                realDownload(file, total, data.get(index), callback);
+                realDownload(file, index, total, data.get(index), callback);
             } else {
-                callback.onError();
+                callback.onError(index);
             }
         } catch (NoSuchProviderException e) {
             e.printStackTrace();
-            callback.onError();
+            callback.onError(index);
         } catch (Exception e) {
             e.printStackTrace();
-            callback.onError();
+            callback.onError(index);
         } finally {
             try {
                 if (inbox != null)
@@ -762,7 +760,7 @@ public class EmailRemoteDataSource implements EmailDataSource {
                 new ByteArrayDataSource(sb.toString(), "text/html"));
     }
 
-    private static void realDownload(File file, long total, InputStream is, DownloadCallback callback) {
+    private static void realDownload(File file, int index, long total, InputStream is, DownloadCallback callback) {
         FileOutputStream fos = null;
         int len;
         long sum = 0;
@@ -773,17 +771,17 @@ public class EmailRemoteDataSource implements EmailDataSource {
                 sum += len;
                 fos.write(bys, 0, len);
                 android.os.Message message = android.os.Message.obtain();
-                callback.onProgress(sum * 1.0f / total);
+                callback.onProgress(index, sum * 1.0f / total);
                 Log.i("mango", "percent:" + sum * 1.0f / total);
             }
             fos.flush();
-            callback.onFinish();
+            callback.onFinish(index);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            callback.onError();
+            callback.onError(index);
         } catch (IOException e) {
             e.printStackTrace();
-            callback.onError();
+            callback.onError(index);
         } finally {
             try {
                 if (fos != null)

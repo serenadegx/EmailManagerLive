@@ -39,6 +39,8 @@ public class SendEmailActivity extends AppCompatActivity implements SendEmailNav
     private SendEmailViewModel viewModel;
     private ProgressDialog dialog;
     private AttachmentListAdapter listAdapter;
+    private Email email;
+    private int type;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,6 +49,8 @@ public class SendEmailActivity extends AppCompatActivity implements SendEmailNav
         binding.rvAttachment.setLayoutManager(new LinearLayoutManager(this));
         binding.rvAttachment.addItemDecoration(new EMDecoration(this, EMDecoration.VERTICAL_LIST,
                 R.drawable.list_divider, 0));
+        email = getIntent().getParcelableExtra("data");
+        type = getIntent().getIntExtra("type", -1);
         setupToolbar();
         setupAdapter();
         setupViewModel();
@@ -56,8 +60,9 @@ public class SendEmailActivity extends AppCompatActivity implements SendEmailNav
     @Override
     protected void onStart() {
         super.onStart();
-        viewModel.start(getIntent().getIntExtra("type", -1), (Email) getIntent()
-                .getParcelableExtra("data"));
+        viewModel.start(type, email);
+        //默认进入界面下载附件
+//        listAdapter.download();
     }
 
     @Override
@@ -74,7 +79,12 @@ public class SendEmailActivity extends AppCompatActivity implements SendEmailNav
     }
 
     @Override
-    public void onSentError() {
+    public void onSaving(String msg) {
+        dialog = ProgressDialog.show(this, "", msg, false, false);
+    }
+
+    @Override
+    public void onError() {
         if (dialog != null)
             dialog.cancel();
     }
@@ -141,7 +151,7 @@ public class SendEmailActivity extends AppCompatActivity implements SendEmailNav
     }
 
     private void setupAdapter() {
-        listAdapter = new AttachmentListAdapter(this, this);
+        listAdapter = new AttachmentListAdapter(this, this, email.getId(), EmailApplication.getAccount());
         binding.rvAttachment.setAdapter(listAdapter);
     }
 

@@ -41,7 +41,7 @@ public class AttachmentListAdapter extends BaseAdapter<Attachment, BaseViewHolde
     private ProgressDialog progressDialog;
     private ViewDataBinding dataBinding;
 
-    Handler mHandler = new Handler(){
+    Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             notifyItemChanged(position);
@@ -73,13 +73,13 @@ public class AttachmentListAdapter extends BaseAdapter<Attachment, BaseViewHolde
     }
 
     @Override
-    public void onProgress(float percent) {
+    public void onProgress(int index, float percent) {
         if (progressDialog != null)
             progressDialog.setProgress((int) (percent * 100));
     }
 
     @Override
-    public void onFinish() {
+    public void onFinish(int index) {
         if (progressDialog != null) {
             progressDialog.cancel();
         }
@@ -90,7 +90,7 @@ public class AttachmentListAdapter extends BaseAdapter<Attachment, BaseViewHolde
     }
 
     @Override
-    public void onError() {
+    public void onError(int index) {
         if (progressDialog != null) {
             progressDialog.cancel();
         }
