@@ -1,5 +1,6 @@
 package com.example.emailmanagerlive.data.source.remote;
 
+import android.os.Environment;
 import android.util.Log;
 
 import com.example.emailmanagerlive.data.Account;
@@ -14,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -770,9 +772,7 @@ public class EmailRemoteDataSource implements EmailDataSource {
             while ((len = is.read(bys)) != -1) {
                 sum += len;
                 fos.write(bys, 0, len);
-                android.os.Message message = android.os.Message.obtain();
                 callback.onProgress(index, sum * 1.0f / total);
-                Log.i("mango", "percent:" + sum * 1.0f / total);
             }
             fos.flush();
             callback.onFinish(index);
@@ -883,7 +883,10 @@ public class EmailRemoteDataSource implements EmailDataSource {
                     if (filename != null) {
                         data.setHasAttach(true);
                         if (showStructure) {
-                            data.getAttachments().add(new Attachment(MimeUtility.decodeText(filename), getPrintSize(p.getSize()), p.getSize()));
+                            String fileName = MimeUtility.decodeText(filename);
+                            data.getAttachments().add(new Attachment(fileName,
+                                    Environment.getExternalStorageDirectory().getAbsolutePath()
+                                            + "/EmailManager/" + fileName, getPrintSize(p.getSize()), p.getSize()));
                         }
                     }
                 }

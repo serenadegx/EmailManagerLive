@@ -8,7 +8,6 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 

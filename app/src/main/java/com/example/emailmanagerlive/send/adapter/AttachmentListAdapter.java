@@ -49,7 +49,7 @@ public class AttachmentListAdapter extends BaseAdapter<Attachment, BaseViewHolde
                 notifyItemChanged(msg.arg1);
             } else if (what == FINISH) {
                 notifyItemChanged(msg.arg1);
-            } else {
+            } else if (what == ERROR) {
                 notifyItemChanged(msg.arg1);
             }
         }
@@ -112,8 +112,7 @@ public class AttachmentListAdapter extends BaseAdapter<Attachment, BaseViewHolde
         Attachment attachment = mData.get(index);
         String size = attachment.getSize();
         String substring = size.substring(size.indexOf("/") == -1 ? 0 : size.indexOf("/") + 1);
-        Log.i("mango", "substring:" + substring);
-        attachment.setSize((int) (percent * 100) + "%/" + substring);
+        attachment.setSize((percent * 100) + "%/" + substring);
         Message message = Message.obtain();
         message.what = PROGRESS;
         message.arg1 = index;
