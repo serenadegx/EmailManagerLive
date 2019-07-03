@@ -22,6 +22,7 @@ import com.example.emailmanagerlive.EmailApplication;
 import com.example.emailmanagerlive.Event;
 import com.example.emailmanagerlive.R;
 import com.example.emailmanagerlive.data.Email;
+import com.example.emailmanagerlive.data.EmailParams;
 import com.example.emailmanagerlive.data.source.EmailRepository;
 import com.example.emailmanagerlive.databinding.ActivitySendEmailBinding;
 import com.example.emailmanagerlive.send.adapter.AttachmentListAdapter;
@@ -31,26 +32,22 @@ import com.google.android.material.snackbar.Snackbar;
 
 public class SendEmailActivity extends AppCompatActivity implements SendEmailNavigator {
 
-    public static final int SEND = 1;
-    public static final int REPLY = 2;
-    public static final int FORWARD = 3;
-
     private ActivitySendEmailBinding binding;
     private SendEmailViewModel viewModel;
     private ProgressDialog dialog;
     private AttachmentListAdapter listAdapter;
     private Email email;
-    private int type;
+    private EmailParams mEmailParams;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mEmailParams = getIntent().getParcelableExtra("params");
+        email = getIntent().getParcelableExtra("data");
         binding = DataBindingUtil.setContentView(this, R.layout.activity_send_email);
         binding.rvAttachment.setLayoutManager(new LinearLayoutManager(this));
         binding.rvAttachment.addItemDecoration(new EMDecoration(this, EMDecoration.VERTICAL_LIST,
                 R.drawable.list_divider, 0));
-        email = getIntent().getParcelableExtra("data");
-        type = getIntent().getIntExtra("type", -1);
         setupToolbar();
         setupAdapter();
         setupViewModel();
@@ -60,7 +57,7 @@ public class SendEmailActivity extends AppCompatActivity implements SendEmailNav
     @Override
     protected void onStart() {
         super.onStart();
-        viewModel.start(type, email);
+        viewModel.start(mEmailParams, email);
         //默认进入界面下载附件
 //        listAdapter.download();
     }
@@ -107,10 +104,10 @@ public class SendEmailActivity extends AppCompatActivity implements SendEmailNav
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_send) {
-            int type = getIntent().getIntExtra("type", -1);
-            if (type == SEND) {
+            if (mEmailParams.getFunction() == EmailParams.Function.NORMAL_SEND || mEmailParams
+                    .getFunction() == EmailParams.Function.EDIT) {
                 viewModel.send();
-            } else if (type == REPLY) {
+            } else if (mEmailParams.getFunction() == EmailParams.Function.REPLY) {
                 viewModel.reply();
             } else {
                 viewModel.forward();
@@ -151,7 +148,7 @@ public class SendEmailActivity extends AppCompatActivity implements SendEmailNav
     }
 
     private void setupAdapter() {
-        listAdapter = new AttachmentListAdapter(this, this, email.getId(), EmailApplication.getAccount());
+        listAdapter = new AttachmentListAdapter(this, this, mEmailParams, EmailApplication.getAccount());
         binding.rvAttachment.setAdapter(listAdapter);
     }
 
@@ -195,6 +192,12 @@ public class SendEmailActivity extends AppCompatActivity implements SendEmailNav
     public static void start2SendEmailActivity(Context context, int type, Email data) {
         context.startActivity(new Intent(context, SendEmailActivity.class)
                 .putExtra("type", type)
+                .putExtra("data", data));
+    }
+
+    public static void start2SendEmailActivity(Context context, EmailParams params, Email data) {
+        context.startActivity(new Intent(context, SendEmailActivity.class)
+                .putExtra("params", params)
                 .putExtra("data", data));
     }
 }

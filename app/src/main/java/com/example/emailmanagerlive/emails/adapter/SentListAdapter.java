@@ -11,6 +11,7 @@ import androidx.lifecycle.LifecycleOwner;
 import com.example.emailmanagerlive.BR;
 import com.example.emailmanagerlive.R;
 import com.example.emailmanagerlive.data.Email;
+import com.example.emailmanagerlive.data.EmailParams;
 import com.example.emailmanagerlive.emaildetail.EmailDetailActivity;
 import com.example.emailmanagerlive.utils.BaseAdapter;
 import com.example.emailmanagerlive.utils.BaseViewHolder;
@@ -40,6 +41,10 @@ public class SentListAdapter extends BaseAdapter<Email, BaseViewHolder> {
     }
 
     public void goNext(Email item, int position) {
-        EmailDetailActivity.start2EmailDetailActivity(mContext, item.getId(),EmailDetailActivity.SENT);
+        EmailParams params = new EmailParams();
+        params.setType(EmailParams.Type.SENT);
+        params.setId(item.getId());
+//        EmailDetailActivity.start2EmailDetailActivity(mContext, item.getId(),EmailDetailActivity.SENT);
+        EmailDetailActivity.start2EmailDetailActivity(mContext, params);
     }
 }

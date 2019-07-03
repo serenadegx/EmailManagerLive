@@ -21,6 +21,7 @@ import com.example.emailmanagerlive.BR;
 import com.example.emailmanagerlive.EmailApplication;
 import com.example.emailmanagerlive.R;
 import com.example.emailmanagerlive.data.Attachment;
+import com.example.emailmanagerlive.data.EmailParams;
 import com.example.emailmanagerlive.data.source.EmailDataSource;
 import com.example.emailmanagerlive.data.source.EmailRepository;
 import com.example.emailmanagerlive.utils.BaseAdapter;
@@ -34,7 +35,7 @@ import java.io.IOException;
 public class AttachmentListAdapter extends BaseAdapter<Attachment, BaseViewHolder> implements EmailDataSource.DownloadCallback {
     public static final int REQUEST_PERMISSIONS = 1;
     private static final int NOTIFY = 2;
-    private long id;
+    private final EmailParams mEmailParams;
     private LifecycleOwner mLifecycleOwner;
     private EmailRepository mRepository;
     private int position = -1;
@@ -48,9 +49,9 @@ public class AttachmentListAdapter extends BaseAdapter<Attachment, BaseViewHolde
         }
     };
 
-    public AttachmentListAdapter(Context context, long id, LifecycleOwner lifecycleOwner) {
+    public AttachmentListAdapter(Context context, EmailParams params, LifecycleOwner lifecycleOwner) {
         super(context);
-        this.id = id;
+        this.mEmailParams = params;
         this.mLifecycleOwner = lifecycleOwner;
         mRepository = EmailRepository.provideRepository();
     }
@@ -134,7 +135,8 @@ public class AttachmentListAdapter extends BaseAdapter<Attachment, BaseViewHolde
         new Thread() {
             @Override
             public void run() {
-                mRepository.download(EmailApplication.getAccount(), file, id, position, mData.get(position).getTotal(), AttachmentListAdapter.this);
+                mRepository.download(EmailApplication.getAccount(), file, mEmailParams, position,
+                        mData.get(position).getTotal(), AttachmentListAdapter.this);
             }
         }.start();
     }

@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -22,20 +24,21 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.emailmanagerlive.EmailApplication;
 import com.example.emailmanagerlive.Event;
 import com.example.emailmanagerlive.R;
+import com.example.emailmanagerlive.data.Email;
+import com.example.emailmanagerlive.data.EmailParams;
 import com.example.emailmanagerlive.data.source.EmailRepository;
 import com.example.emailmanagerlive.databinding.ActivityEmailDetailBinding;
 import com.example.emailmanagerlive.emaildetail.adapter.AttachmentListAdapter;
+import com.example.emailmanagerlive.send.SendEmailActivity;
 import com.example.multifile.ui.EMDecoration;
 import com.google.android.material.snackbar.Snackbar;
 
 public class EmailDetailActivity extends AppCompatActivity implements EmailDetailNavigator {
 
-    public static final int INBOX = 1;
-    public static final int SENT = 2;
-    public static final int DRAFTS = 3;
     private ActivityEmailDetailBinding binding;
     private EmailViewModel viewModel;
     private AttachmentListAdapter listAdapter;
+    private EmailParams mEmailParams;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,11 +47,34 @@ public class EmailDetailActivity extends AppCompatActivity implements EmailDetai
         binding.rvAttachment.setLayoutManager(new LinearLayoutManager(this));
         binding.rvAttachment.addItemDecoration(new EMDecoration(this, EMDecoration.VERTICAL_LIST,
                 R.drawable.list_divider, 0));
+        mEmailParams = getIntent().getParcelableExtra("params");
         setupToolbar();
         setupAdapter();
         setupViewModel();
         setupSnackBar();
         initData();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (mEmailParams.getType() == EmailParams.Type.DRAFTS)
+            getMenuInflater().inflate(R.menu.edit, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_edit) {
+            Email email = viewModel.getEmail();
+            if (email != null) {
+                mEmailParams.setFunction(EmailParams.Function.EDIT);
+                SendEmailActivity.start2SendEmailActivity(this, mEmailParams, email);
+            } else {
+                Snackbar.make(binding.getRoot(), "请等待加载完成后操作", Snackbar.LENGTH_SHORT).show();
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -79,8 +105,7 @@ public class EmailDetailActivity extends AppCompatActivity implements EmailDetai
     }
 
     private void initData() {
-        viewModel.getEmail(getIntent().getLongExtra("id", -1), getIntent().
-                getIntExtra("type", 0));
+        viewModel.getEmail(mEmailParams);
     }
 
     private void setupSnackBar() {
@@ -102,8 +127,7 @@ public class EmailDetailActivity extends AppCompatActivity implements EmailDetai
     }
 
     private void setupAdapter() {
-        listAdapter = new AttachmentListAdapter(this, getIntent().
-                getLongExtra("id", -1), this);
+        listAdapter = new AttachmentListAdapter(this, mEmailParams, this);
         binding.rvAttachment.setAdapter(listAdapter);
     }
 
@@ -141,5 +165,10 @@ public class EmailDetailActivity extends AppCompatActivity implements EmailDetai
         context.startActivity(new Intent(context, EmailDetailActivity.class)
                 .putExtra("id", id)
                 .putExtra("type", type));
+    }
+
+    public static void start2EmailDetailActivity(Context context, EmailParams params) {
+        context.startActivity(new Intent(context, EmailDetailActivity.class)
+                .putExtra("params", params));
     }
 }

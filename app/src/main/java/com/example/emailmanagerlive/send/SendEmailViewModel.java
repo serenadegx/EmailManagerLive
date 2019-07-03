@@ -13,6 +13,7 @@ import com.example.emailmanagerlive.Event;
 import com.example.emailmanagerlive.data.Account;
 import com.example.emailmanagerlive.data.Attachment;
 import com.example.emailmanagerlive.data.Email;
+import com.example.emailmanagerlive.data.EmailParams;
 import com.example.emailmanagerlive.data.source.EmailDataSource;
 import com.example.emailmanagerlive.data.source.EmailRepository;
 import com.example.multifile.XRMultiFile;
@@ -38,8 +39,8 @@ public class SendEmailViewModel extends ViewModel implements EmailDataSource.Cal
     private Account mAccount;
     private SendEmailNavigator mNavigator;
     private List<Attachment> mAttachments;
-    private long id;
-    private String mContent;
+    private EmailParams mEmailParams;
+    private Email mEmail;
 
     public SendEmailViewModel(EmailRepository repository, Account account) {
         this.mRepository = repository;
@@ -79,21 +80,28 @@ public class SendEmailViewModel extends ViewModel implements EmailDataSource.Cal
         snackBarText.postValue(new Event<>("发送失败"));
     }
 
-    public void start(int type, Email data) {
+    public void start(EmailParams params, Email data) {
+        this.mEmailParams = params;
+        this.mEmail = data;
         receiver.setValue("1099805713@qq.com");
         send.setValue(EmailApplication.getAccount().getAccount());
         if (data != null) {
-            if (type == SendEmailActivity.REPLY) {
+            if (params.getFunction() == EmailParams.Function.REPLY) {
                 receiver.setValue(data.getFrom());
                 subject.setValue("回复:" + data.getSubject());
-            } else if (type == SendEmailActivity.FORWARD) {
+            } else if (params.getFunction() == EmailParams.Function.FORWARD) {
                 subject.setValue("转发:" + data.getSubject());
                 if (data.getAttachments() != null && data.getAttachments().size() > 0) {
                     items.setValue(data.getAttachments());
                 }
+            } else if (params.getFunction() == EmailParams.Function.EDIT) {
+                receiver.setValue(data.getTo().substring(0, data.getTo().lastIndexOf(";")));
+                subject.setValue(data.getSubject());
+                content.setValue(data.getContent());
+                if (data.getAttachments() != null && data.getAttachments().size() > 0) {
+                    items.setValue(data.getAttachments());
+                }
             }
-            this.id = data.getId();
-            this.mContent = data.getContent();
         }
     }
 
@@ -119,14 +127,14 @@ public class SendEmailViewModel extends ViewModel implements EmailDataSource.Cal
     public void reply() {
         mNavigator.onSending("正在回复...");
         final Email email = new Email();
-        email.setId(id);
+        email.setId(mEmailParams.getId());
         email.setFrom(TextUtils.isEmpty(send.getValue()) ? null : send.getValue());
         email.setTo(TextUtils.isEmpty(receiver.getValue()) ? null : receiver.getValue());
         email.setCc(TextUtils.isEmpty(copy.getValue()) ? null : copy.getValue());
         email.setBcc(TextUtils.isEmpty(secret.getValue()) ? null : secret.getValue());
         email.setSubject(subject.getValue());
         email.setAppend(content.getValue());
-        email.setContent(mContent);
+        email.setContent(mEmail.getContent());
         email.setAttachments(items.getValue());
         new Thread() {
             @Override
@@ -139,14 +147,14 @@ public class SendEmailViewModel extends ViewModel implements EmailDataSource.Cal
     public void forward() {
         mNavigator.onSending("正在转发...");
         final Email email = new Email();
-        email.setId(id);
+        email.setId(mEmailParams.getId());
         email.setFrom(TextUtils.isEmpty(send.getValue()) ? null : send.getValue());
         email.setTo(TextUtils.isEmpty(receiver.getValue()) ? null : receiver.getValue());
         email.setCc(TextUtils.isEmpty(copy.getValue()) ? null : copy.getValue());
         email.setBcc(TextUtils.isEmpty(secret.getValue()) ? null : secret.getValue());
         email.setSubject(subject.getValue());
         email.setAppend(content.getValue());
-        email.setContent(mContent);
+        email.setContent(mEmail.getContent());
         email.setAttachments(items.getValue());
         new Thread() {
             @Override

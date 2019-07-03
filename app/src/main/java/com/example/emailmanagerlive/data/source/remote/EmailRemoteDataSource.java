@@ -6,6 +6,7 @@ import android.util.Log;
 import com.example.emailmanagerlive.data.Account;
 import com.example.emailmanagerlive.data.Attachment;
 import com.example.emailmanagerlive.data.Email;
+import com.example.emailmanagerlive.data.EmailParams;
 import com.example.emailmanagerlive.data.source.EmailDataSource;
 import com.sun.mail.smtp.SMTPTransport;
 
@@ -219,7 +220,7 @@ public class EmailRemoteDataSource implements EmailDataSource {
     }
 
     @Override
-    public void getEmail(final Account account, long id, GetEmailCallBack callBack) {
+    public void getEmail(final Account account, EmailParams params, GetEmailCallBack callBack) {
         showStructure = true;
         Email data;
         Properties props = System.getProperties();
@@ -239,11 +240,19 @@ public class EmailRemoteDataSource implements EmailDataSource {
         try {
             store = session.getStore(account.getConfig().getReceiveProtocol());
             store.connect();
-            inbox = store.getFolder("INBOX");
+            if (params.getType() == EmailParams.Type.INBOX) {
+                inbox = store.getFolder("INBOX");
+            } else if (params.getType() == EmailParams.Type.SENT) {
+                inbox = store.getFolder("Sent Messages");
+            } else {
+                inbox = store.getFolder("Drafts");
+            }
             inbox.open(Folder.READ_ONLY);
-            Message message = inbox.getMessage((int) id);
+            Message message = inbox.getMessage((int) params.getId());
             //标记已读
-            message.setFlag(Flags.Flag.SEEN, true);
+            if (params.getType() == EmailParams.Type.INBOX) {
+                message.setFlag(Flags.Flag.SEEN, true);
+            }
             data = new Email();
             data.setAttachments(new ArrayList<Attachment>());
             dumpPart(message, data);
@@ -267,97 +276,97 @@ public class EmailRemoteDataSource implements EmailDataSource {
         }
     }
 
-    public void getSentEmail(final Account account, long id, GetEmailCallBack callBack) {
-        showStructure = true;
-        Email data;
-        Properties props = System.getProperties();
-        props.put(account.getConfig().getReceiveHostKey(), account.getConfig().getReceiveHostValue());
-        props.put(account.getConfig().getReceivePortKey(), account.getConfig().getReceivePortValue());
-        props.put(account.getConfig().getReceiveEncryptKey(), account.getConfig().getReceiveEncryptValue());
-        Session session = Session.getInstance(props, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(
-                        account.getAccount(), account.getPwd());
-            }
-        });
-//        session.setDebug(true);
-        Store store = null;
-        Folder inbox = null;
-        try {
-            store = session.getStore(account.getConfig().getReceiveProtocol());
-            store.connect();
-            inbox = store.getFolder("Sent Messages");
-            inbox.open(Folder.READ_ONLY);
-            Message message = inbox.getMessage((int) id);
-            data = new Email();
-            data.setAttachments(new ArrayList<Attachment>());
-            dumpPart(message, data);
-            showStructure = false;
-            callBack.onEmailLoaded(data);
-        } catch (NoSuchProviderException e) {
-            e.printStackTrace();
-            callBack.onDataNotAvailable();
-        } catch (Exception e) {
-            e.printStackTrace();
-            callBack.onDataNotAvailable();
-        } finally {
-            try {
-                if (inbox != null)
-                    inbox.close();
-                if (store != null)
-                    store.close();
-            } catch (MessagingException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void getDraft(final Account account, long id, GetEmailCallBack callBack) {
-        showStructure = true;
-        Email data;
-        Properties props = System.getProperties();
-        props.put(account.getConfig().getReceiveHostKey(), account.getConfig().getReceiveHostValue());
-        props.put(account.getConfig().getReceivePortKey(), account.getConfig().getReceivePortValue());
-        props.put(account.getConfig().getReceiveEncryptKey(), account.getConfig().getReceiveEncryptValue());
-        Session session = Session.getInstance(props, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(
-                        account.getAccount(), account.getPwd());
-            }
-        });
-//        session.setDebug(true);
-        Store store = null;
-        Folder inbox = null;
-        try {
-            store = session.getStore(account.getConfig().getReceiveProtocol());
-            store.connect();
-            inbox = store.getFolder("Drafts");
-            inbox.open(Folder.READ_ONLY);
-            Message message = inbox.getMessage((int) id);
-            data = new Email();
-            data.setAttachments(new ArrayList<Attachment>());
-            dumpPart(message, data);
-            showStructure = false;
-            callBack.onEmailLoaded(data);
-        } catch (NoSuchProviderException e) {
-            e.printStackTrace();
-            callBack.onDataNotAvailable();
-        } catch (Exception e) {
-            e.printStackTrace();
-            callBack.onDataNotAvailable();
-        } finally {
-            try {
-                if (inbox != null)
-                    inbox.close();
-                if (store != null)
-                    store.close();
-            } catch (MessagingException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+//    public void getSentEmail(final Account account, long id, GetEmailCallBack callBack) {
+//        showStructure = true;
+//        Email data;
+//        Properties props = System.getProperties();
+//        props.put(account.getConfig().getReceiveHostKey(), account.getConfig().getReceiveHostValue());
+//        props.put(account.getConfig().getReceivePortKey(), account.getConfig().getReceivePortValue());
+//        props.put(account.getConfig().getReceiveEncryptKey(), account.getConfig().getReceiveEncryptValue());
+//        Session session = Session.getInstance(props, new Authenticator() {
+//            @Override
+//            protected PasswordAuthentication getPasswordAuthentication() {
+//                return new PasswordAuthentication(
+//                        account.getAccount(), account.getPwd());
+//            }
+//        });
+////        session.setDebug(true);
+//        Store store = null;
+//        Folder inbox = null;
+//        try {
+//            store = session.getStore(account.getConfig().getReceiveProtocol());
+//            store.connect();
+//            inbox = store.getFolder("Sent Messages");
+//            inbox.open(Folder.READ_ONLY);
+//            Message message = inbox.getMessage((int) id);
+//            data = new Email();
+//            data.setAttachments(new ArrayList<Attachment>());
+//            dumpPart(message, data);
+//            showStructure = false;
+//            callBack.onEmailLoaded(data);
+//        } catch (NoSuchProviderException e) {
+//            e.printStackTrace();
+//            callBack.onDataNotAvailable();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            callBack.onDataNotAvailable();
+//        } finally {
+//            try {
+//                if (inbox != null)
+//                    inbox.close();
+//                if (store != null)
+//                    store.close();
+//            } catch (MessagingException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
+//
+//    public void getDraft(final Account account, long id, GetEmailCallBack callBack) {
+//        showStructure = true;
+//        Email data;
+//        Properties props = System.getProperties();
+//        props.put(account.getConfig().getReceiveHostKey(), account.getConfig().getReceiveHostValue());
+//        props.put(account.getConfig().getReceivePortKey(), account.getConfig().getReceivePortValue());
+//        props.put(account.getConfig().getReceiveEncryptKey(), account.getConfig().getReceiveEncryptValue());
+//        Session session = Session.getInstance(props, new Authenticator() {
+//            @Override
+//            protected PasswordAuthentication getPasswordAuthentication() {
+//                return new PasswordAuthentication(
+//                        account.getAccount(), account.getPwd());
+//            }
+//        });
+////        session.setDebug(true);
+//        Store store = null;
+//        Folder inbox = null;
+//        try {
+//            store = session.getStore(account.getConfig().getReceiveProtocol());
+//            store.connect();
+//            inbox = store.getFolder("Drafts");
+//            inbox.open(Folder.READ_ONLY);
+//            Message message = inbox.getMessage((int) id);
+//            data = new Email();
+//            data.setAttachments(new ArrayList<Attachment>());
+//            dumpPart(message, data);
+//            showStructure = false;
+//            callBack.onEmailLoaded(data);
+//        } catch (NoSuchProviderException e) {
+//            e.printStackTrace();
+//            callBack.onDataNotAvailable();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            callBack.onDataNotAvailable();
+//        } finally {
+//            try {
+//                if (inbox != null)
+//                    inbox.close();
+//                if (store != null)
+//                    store.close();
+//            } catch (MessagingException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
     public void send(final Account account, Email email, CallBack callBack) {
         Properties props = System.getProperties();
@@ -417,9 +426,12 @@ public class EmailRemoteDataSource implements EmailDataSource {
             callBack.onError();
         } catch (NoSuchProviderException e) {
             e.printStackTrace();
+            callBack.onError();
         } catch (MessagingException e) {
+            callBack.onError();
             e.printStackTrace();
         } catch (IOException e) {
+            callBack.onError();
             e.printStackTrace();
         } finally {
             try {
@@ -490,6 +502,7 @@ public class EmailRemoteDataSource implements EmailDataSource {
             t.sendMessage(forward, forward.getAllRecipients());
             callBack.onSuccess();
         } catch (NoSuchProviderException e) {
+            callBack.onError();
             e.printStackTrace();
         } catch (MessagingException e) {
             callBack.onError();
@@ -498,6 +511,7 @@ public class EmailRemoteDataSource implements EmailDataSource {
             callBack.onError();
             e.printStackTrace();
         } catch (IOException e) {
+            callBack.onError();
             e.printStackTrace();
         } finally {
             try {
@@ -518,7 +532,7 @@ public class EmailRemoteDataSource implements EmailDataSource {
     }
 
     @Override
-    public void delete(final Account account, long id, CallBack callBack) {
+    public void delete(final Account account, EmailParams params, CallBack callBack) {
         Properties props = System.getProperties();
         props.put(account.getConfig().getReceiveHostKey(), account.getConfig().getReceiveHostValue());
         props.put(account.getConfig().getReceivePortKey(), account.getConfig().getReceivePortValue());
@@ -536,9 +550,15 @@ public class EmailRemoteDataSource implements EmailDataSource {
         try {
             store = session.getStore(account.getConfig().getReceiveProtocol());
             store.connect();
-            inbox = store.getFolder("INBOX");
+            if (params.getType() == EmailParams.Type.INBOX) {
+                inbox = store.getFolder("INBOX");
+            } else if (params.getType() == EmailParams.Type.SENT) {
+                inbox = store.getFolder("Sent Messages");
+            } else {
+                inbox = store.getFolder("Drafts");
+            }
             inbox.open(Folder.READ_WRITE);
-            Message message = inbox.getMessage((int) id);
+            Message message = inbox.getMessage((int) params.getId());
             message.setFlag(Flags.Flag.DELETED, true);
             callBack.onSuccess();
         } catch (NoSuchProviderException e) {
@@ -558,49 +578,49 @@ public class EmailRemoteDataSource implements EmailDataSource {
         }
     }
 
-    public void deleteByType(final Account account, long id, int type, CallBack callBack) {
-        Properties props = System.getProperties();
-        props.put(account.getConfig().getReceiveHostKey(), account.getConfig().getReceiveHostValue());
-        props.put(account.getConfig().getReceivePortKey(), account.getConfig().getReceivePortValue());
-        props.put(account.getConfig().getReceiveEncryptKey(), account.getConfig().getReceiveEncryptValue());
-        Session session = Session.getInstance(props, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(
-                        account.getAccount(), account.getPwd());
-            }
-        });
-//        session.setDebug(true);
-        Store store = null;
-        Folder inbox = null;
-        try {
-            store = session.getStore(account.getConfig().getReceiveProtocol());
-            store.connect();
-            if (type == 2) {
-                inbox = store.getFolder("Sent Messages");
-            } else {
-                inbox = store.getFolder("Drafts");
-            }
-            inbox.open(Folder.READ_WRITE);
-            Message message = inbox.getMessage((int) id);
-            message.setFlag(Flags.Flag.DELETED, true);
-            callBack.onSuccess();
-        } catch (NoSuchProviderException e) {
-            e.printStackTrace();
-        } catch (MessagingException e) {
-            callBack.onError();
-            e.printStackTrace();
-        } finally {
-            try {
-                if (inbox != null)
-                    inbox.close();
-                if (store != null)
-                    store.close();
-            } catch (MessagingException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+//    public void deleteByType(final Account account, long id, int type, CallBack callBack) {
+//        Properties props = System.getProperties();
+//        props.put(account.getConfig().getReceiveHostKey(), account.getConfig().getReceiveHostValue());
+//        props.put(account.getConfig().getReceivePortKey(), account.getConfig().getReceivePortValue());
+//        props.put(account.getConfig().getReceiveEncryptKey(), account.getConfig().getReceiveEncryptValue());
+//        Session session = Session.getInstance(props, new Authenticator() {
+//            @Override
+//            protected PasswordAuthentication getPasswordAuthentication() {
+//                return new PasswordAuthentication(
+//                        account.getAccount(), account.getPwd());
+//            }
+//        });
+////        session.setDebug(true);
+//        Store store = null;
+//        Folder inbox = null;
+//        try {
+//            store = session.getStore(account.getConfig().getReceiveProtocol());
+//            store.connect();
+//            if (type == 2) {
+//                inbox = store.getFolder("Sent Messages");
+//            } else {
+//                inbox = store.getFolder("Drafts");
+//            }
+//            inbox.open(Folder.READ_WRITE);
+//            Message message = inbox.getMessage((int) id);
+//            message.setFlag(Flags.Flag.DELETED, true);
+//            callBack.onSuccess();
+//        } catch (NoSuchProviderException e) {
+//            e.printStackTrace();
+//        } catch (MessagingException e) {
+//            callBack.onError();
+//            e.printStackTrace();
+//        } finally {
+//            try {
+//                if (inbox != null)
+//                    inbox.close();
+//                if (store != null)
+//                    store.close();
+//            } catch (MessagingException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
     public void save2Drafts(final Account account, Email data, CallBack callBack) {
         Properties props = System.getProperties();
@@ -679,7 +699,7 @@ public class EmailRemoteDataSource implements EmailDataSource {
         }
     }
 
-    public void downloadAttachment(final Account account, File file, long id, int index, long total, DownloadCallback callback) {
+    public void downloadAttachment(final Account account, File file, EmailParams params, int index, long total, DownloadCallback callback) {
         List<InputStream> data = new ArrayList<>();
         Properties props = System.getProperties();
         props.put(account.getConfig().getReceiveHostKey(), account.getConfig().getReceiveHostValue());
@@ -698,11 +718,17 @@ public class EmailRemoteDataSource implements EmailDataSource {
         try {
             store = session.getStore(account.getConfig().getReceiveProtocol());
             store.connect();
-            inbox = store.getFolder("INBOX");
+            if (params.getType() == EmailParams.Type.INBOX) {
+                inbox = store.getFolder("INBOX");
+            } else if (params.getType() == EmailParams.Type.SENT) {
+                inbox = store.getFolder("Sent Messages");
+            } else {
+                inbox = store.getFolder("Drafts");
+            }
             inbox.open(Folder.READ_ONLY);
-            Message message = inbox.getMessage((int) id);
+            Message message = inbox.getMessage((int) params.getId());
             download(message, data);
-            if (data.size() >= index) {
+            if (data.size() >= index && data.size() > 0) {
                 realDownload(file, index, total, data.get(index), callback);
             } else {
                 callback.onError(index);

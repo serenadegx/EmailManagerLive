@@ -15,6 +15,7 @@ import com.example.emailmanagerlive.Event;
 import com.example.emailmanagerlive.data.Account;
 import com.example.emailmanagerlive.data.Attachment;
 import com.example.emailmanagerlive.data.Email;
+import com.example.emailmanagerlive.data.EmailParams;
 import com.example.emailmanagerlive.data.source.EmailDataSource;
 import com.example.emailmanagerlive.data.source.EmailRepository;
 import com.example.emailmanagerlive.send.SendEmailActivity;
@@ -40,10 +41,9 @@ public class EmailViewModel extends ViewModel implements EmailDataSource.GetEmai
     private EmailRepository mRepository;
     private Account mAccount;
     private Context mContext;
-    private long id;
     private EmailDetailNavigator mNavigator;
-    private int type;
     private Email email;
+    private EmailParams mEmailParams;
 
     public EmailViewModel(EmailRepository mRepository, Account account, Context context) {
         this.mRepository = mRepository;
@@ -61,12 +61,8 @@ public class EmailViewModel extends ViewModel implements EmailDataSource.GetEmai
     @Override
     public void onEmailLoaded(Email email) {
         this.email = email;
-        if (type == EmailDetailActivity.INBOX) {
+        if (mEmailParams.getType() == EmailParams.Type.INBOX) {
             title.postValue(TextUtils.isEmpty(email.getPersonal()) ? email.getFrom() : email.getPersonal());
-        } else if (type == EmailDetailActivity.SENT) {
-            title.postValue("发件箱");
-        } else {
-            title.postValue("草稿箱");
         }
         receivers.postValue(email.getTo());
         isCc.postValue(!TextUtils.isEmpty(email.getCc()));
@@ -93,32 +89,38 @@ public class EmailViewModel extends ViewModel implements EmailDataSource.GetEmai
         snackBarText.postValue(new Event<>("获取失败"));
     }
 
-    public void getEmail(final long id, final int type) {
-        this.id = id;
-        this.type = type;
+    public Email getEmail() {
+        return email;
+    }
+
+    public void getEmail(EmailParams params) {
+        this.mEmailParams = params;
+        if (params.getType() == EmailParams.Type.INBOX) {
+            title.postValue("收件箱");
+        } else if (params.getType() == EmailParams.Type.SENT) {
+            title.postValue("发件箱");
+        } else {
+            title.postValue("草稿箱");
+        }
         new Thread() {
             @Override
             public void run() {
-                if (type == EmailDetailActivity.INBOX) {
-                    mRepository.getEmail(mAccount, id, EmailViewModel.this);
-                } else if (type == EmailDetailActivity.SENT) {
-                    mRepository.getSentEmail(mAccount, id, EmailViewModel.this);
-                } else {
-                    mRepository.getDraft(mAccount, id, EmailViewModel.this);
-                }
+                mRepository.getEmail(mAccount, mEmailParams, EmailViewModel.this);
             }
         }.start();
 
     }
 
     public void reply(View view) {
+        mEmailParams.setFunction(EmailParams.Function.REPLY);
         if (email != null)
-            SendEmailActivity.start2SendEmailActivity(mContext, SendEmailActivity.REPLY, email);
+            SendEmailActivity.start2SendEmailActivity(mContext, mEmailParams, email);
     }
 
     public void forward(View view) {
+        mEmailParams.setFunction(EmailParams.Function.FORWARD);
         if (email != null)
-            SendEmailActivity.start2SendEmailActivity(mContext, SendEmailActivity.FORWARD, email);
+            SendEmailActivity.start2SendEmailActivity(mContext, mEmailParams, email);
     }
 
     public void delete(View view) {
@@ -150,7 +152,7 @@ public class EmailViewModel extends ViewModel implements EmailDataSource.GetEmai
         new Thread() {
             @Override
             public void run() {
-                mRepository.deleteByType(mAccount, id, type, new EmailDataSource.CallBack() {
+                mRepository.delete(mAccount, mEmailParams, new EmailDataSource.CallBack() {
                     @Override
                     public void onSuccess() {
                         snackBarText.postValue(new Event<>("删除成功"));

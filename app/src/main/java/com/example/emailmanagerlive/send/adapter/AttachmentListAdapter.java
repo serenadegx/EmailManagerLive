@@ -18,6 +18,7 @@ import com.example.emailmanagerlive.EmailApplication;
 import com.example.emailmanagerlive.R;
 import com.example.emailmanagerlive.data.Account;
 import com.example.emailmanagerlive.data.Attachment;
+import com.example.emailmanagerlive.data.EmailParams;
 import com.example.emailmanagerlive.data.source.EmailDataSource;
 import com.example.emailmanagerlive.data.source.EmailRepository;
 import com.example.emailmanagerlive.send.SendEmailViewModel;
@@ -35,8 +36,8 @@ public class AttachmentListAdapter extends BaseAdapter<Attachment, BaseViewHolde
     private static final int PROGRESS = 1;
     private static final int FINISH = 2;
     private static final int ERROR = 3;
-    private final long id;
     private final Account mAccount;
+    private final EmailParams mEmailParams;
     private LifecycleOwner mLifecycleOwner;
     private ViewDataBinding dataBinding;
     private SendEmailViewModel mViewModel;
@@ -55,10 +56,10 @@ public class AttachmentListAdapter extends BaseAdapter<Attachment, BaseViewHolde
         }
     };
 
-    public AttachmentListAdapter(Context context, LifecycleOwner lifecycleOwner, long id, Account account) {
+    public AttachmentListAdapter(Context context, LifecycleOwner lifecycleOwner, EmailParams params, Account account) {
         super(context);
         this.mLifecycleOwner = lifecycleOwner;
-        this.id = id;
+        this.mEmailParams = params;
         this.mAccount = account;
     }
 
@@ -75,15 +76,16 @@ public class AttachmentListAdapter extends BaseAdapter<Attachment, BaseViewHolde
 
     @Override
     public void onBindVH(BaseViewHolder baseViewHolder, int position) {
+        Attachment attachment = mData.get(position);
         ViewDataBinding binding = baseViewHolder.getBinding();
         binding.setLifecycleOwner(mLifecycleOwner);
-        binding.setVariable(BR.item, mData.get(position));
+        binding.setVariable(BR.item, attachment);
         binding.setVariable(BR.adapter, this);
         binding.setVariable(BR.position, position);
         binding.executePendingBindings(); //防止闪烁
-        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/EmailManager", mData.get(position).getFileName());
-        if (!file.exists()) {
-            realDownload(mData.get(position), position);
+        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/EmailManager", attachment.getFileName());
+        if (!file.exists() && !attachment.isDownload()) {
+            realDownload(attachment, position);
         }
     }
 
@@ -147,7 +149,7 @@ public class AttachmentListAdapter extends BaseAdapter<Attachment, BaseViewHolde
             @Override
             public void run() {
                 File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/EmailManager", item.getFileName());
-                EmailRepository.provideRepository().download(mAccount, file, id, index,
+                EmailRepository.provideRepository().download(mAccount, file, mEmailParams, index,
                         item.getTotal(), AttachmentListAdapter.this);
             }
         }.start();

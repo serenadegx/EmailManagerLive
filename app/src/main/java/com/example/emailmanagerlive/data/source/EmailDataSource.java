@@ -2,6 +2,7 @@ package com.example.emailmanagerlive.data.source;
 
 import com.example.emailmanagerlive.data.Account;
 import com.example.emailmanagerlive.data.Email;
+import com.example.emailmanagerlive.data.EmailParams;
 import com.example.emailmanagerlive.data.source.remote.EmailRemoteDataSource;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public interface EmailDataSource {
 
     interface DownloadCallback {
 
-        void onProgress(int index,float percent);
+        void onProgress(int index, float percent);
 
         void onFinish(int index);
 
@@ -38,8 +39,8 @@ public interface EmailDataSource {
 
     void getEmails(Account account, GetEmailsCallBack callBack);
 
-    void getEmail(Account account, long id, GetEmailCallBack callBack);
+    void getEmail(Account account, EmailParams params, GetEmailCallBack callBack);
 
-    void delete(Account account, long id, CallBack callBack);
+    void delete(Account account, EmailParams params, CallBack callBack);
 
 }

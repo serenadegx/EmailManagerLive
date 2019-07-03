@@ -4,6 +4,7 @@ import com.example.emailmanagerlive.EmailApplication;
 import com.example.emailmanagerlive.data.Account;
 import com.example.emailmanagerlive.data.Email;
 import com.example.emailmanagerlive.data.EmailDao;
+import com.example.emailmanagerlive.data.EmailParams;
 import com.example.emailmanagerlive.data.source.EmailDataSource;
 
 import org.greenrobot.greendao.query.QueryBuilder;
@@ -38,9 +39,9 @@ public class EmailLocalDataSource implements EmailDataSource {
     }
 
     @Override
-    public void getEmail(Account account, long id, GetEmailCallBack callBack) {
+    public void getEmail(Account account, EmailParams params, GetEmailCallBack callBack) {
         QueryBuilder<Email> qb = dao.queryBuilder();
-        List<Email> data = qb.where(EmailDao.Properties.Id.eq(id)).list();
+        List<Email> data = qb.where(EmailDao.Properties.Id.eq(params.getId())).list();
         if (data != null && data.size() > 0) {
             callBack.onEmailLoaded(data.get(0));
         } else {
@@ -49,16 +50,16 @@ public class EmailLocalDataSource implements EmailDataSource {
     }
 
     @Override
-    public void delete(Account account, long id, CallBack callBack) {
-        dao.deleteByKey(id);
+    public void delete(Account account, EmailParams params, CallBack callBack) {
+        dao.deleteByKey(params.getId());
         callBack.onSuccess();
     }
 
-    public void deleteAll(){
+    public void deleteAll() {
         dao.deleteAll();
     }
 
-    public void saveAll(List<Email> emails){
+    public void saveAll(List<Email> emails) {
         dao.insertInTx(emails);
     }
 }

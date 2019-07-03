@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.emailmanagerlive.data.EmailParams;
 import com.example.emailmanagerlive.emails.drafts.DraftsFragment;
 import com.example.emailmanagerlive.emails.inbox.InboxFragment;
 import com.example.emailmanagerlive.emails.sent.SentFragment;
@@ -37,8 +38,10 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SendEmailActivity.start2SendEmailActivity(MainActivity.this, SendEmailActivity.SEND,
-                        null);
+                EmailParams params = new EmailParams();
+                params.setType(EmailParams.Type.INBOX);
+                params.setFunction(EmailParams.Function.NORMAL_SEND);
+                SendEmailActivity.start2SendEmailActivity(MainActivity.this, params,null);
             }
         });
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

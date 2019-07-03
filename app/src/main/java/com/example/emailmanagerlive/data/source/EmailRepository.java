@@ -3,9 +3,9 @@ package com.example.emailmanagerlive.data.source;
 import com.example.emailmanagerlive.EmailApplication;
 import com.example.emailmanagerlive.data.Account;
 import com.example.emailmanagerlive.data.Email;
+import com.example.emailmanagerlive.data.EmailParams;
 import com.example.emailmanagerlive.data.source.local.EmailLocalDataSource;
 import com.example.emailmanagerlive.data.source.remote.EmailRemoteDataSource;
-import com.example.emailmanagerlive.send.SendEmailViewModel;
 
 import java.io.File;
 import java.util.List;
@@ -56,24 +56,24 @@ public class EmailRepository implements EmailDataSource {
     }
 
     @Override
-    public void getEmail(Account account, long id, final GetEmailCallBack callBack) {
-        mRemoteDataSource.getEmail(account, id, callBack);
+    public void getEmail(Account account, EmailParams params, final GetEmailCallBack callBack) {
+        mRemoteDataSource.getEmail(account, params, callBack);
     }
 
-    public void getSentEmail(Account account, long id, final GetEmailCallBack callBack) {
-        mRemoteDataSource.getSentEmail(account, id, callBack);
-    }
-
-    public void getDraft(Account account, long id, final GetEmailCallBack callBack) {
-        mRemoteDataSource.getDraft(account, id, callBack);
-    }
+//    public void getSentEmail(Account account, long id, final GetEmailCallBack callBack) {
+//        mRemoteDataSource.getSentEmail(account, id, callBack);
+//    }
+//
+//    public void getDraft(Account account, long id, final GetEmailCallBack callBack) {
+//        mRemoteDataSource.getDraft(account, id, callBack);
+//    }
 
     @Override
-    public void delete(final Account account, final long id, final CallBack callBack) {
-        mRemoteDataSource.delete(account, id, new CallBack() {
+    public void delete(final Account account, final EmailParams params, final CallBack callBack) {
+        mRemoteDataSource.delete(account, params, new CallBack() {
             @Override
             public void onSuccess() {
-                mLocalDataSource.delete(account, id, callBack);
+                mLocalDataSource.delete(account, params, callBack);
             }
 
             @Override
@@ -83,13 +83,13 @@ public class EmailRepository implements EmailDataSource {
         });
     }
 
-    public void deleteByType(Account account, long id, int type, CallBack callBack) {
-        if (type == 1) {
-            delete(account, id, callBack);
-        } else {
-            mRemoteDataSource.deleteByType(account, id, type, callBack);
-        }
-    }
+//    public void deleteByType(Account account, long id, int type, CallBack callBack) {
+//        if (type == 1) {
+//            delete(account, id, callBack);
+//        } else {
+//            mRemoteDataSource.deleteByType(account, id, type, callBack);
+//        }
+//    }
 
     /**
      * 刷新数据
@@ -140,16 +140,16 @@ public class EmailRepository implements EmailDataSource {
         mRemoteDataSource.reply(account, email, callBack);
     }
 
-    public void forward(Account account, Email email, CallBack callBack){
+    public void forward(Account account, Email email, CallBack callBack) {
         mRemoteDataSource.forward(account, email, callBack);
     }
 
-    public void save2Drafts(Account account, Email data, CallBack callBack){
+    public void save2Drafts(Account account, Email data, CallBack callBack) {
         mRemoteDataSource.save2Drafts(account, data, callBack);
     }
 
-    public void download(Account account, File file, long id, int index, long total, DownloadCallback callback) {
-        mRemoteDataSource.downloadAttachment(account, file, id, index, total, callback);
+    public void download(Account account, File file, EmailParams params, int index, long total, DownloadCallback callback) {
+        mRemoteDataSource.downloadAttachment(account, file, params, index, total, callback);
     }
 
     private void getEmailsFromRemoteDataSource(Account detail, final GetEmailsCallBack callBack) {
