@@ -10,6 +10,7 @@ import com.example.emailmanagerlive.EmailApplication;
 import com.example.emailmanagerlive.Event;
 import com.example.emailmanagerlive.data.Account;
 import com.example.emailmanagerlive.data.source.AccountRepository;
+import com.example.emailmanagerlive.utils.ThreadPoolFactory;
 
 import java.util.Properties;
 
@@ -31,8 +32,6 @@ public class VerifyModel extends ViewModel {
     public VerifyModel(AccountRepository repository, long category) {
         this.mRepository = repository;
         this.mCategory = category;
-        account.setValue("guoxinrui@fantaike.ai");
-        pwd.setValue("1993Gxr");
     }
 
     public MutableLiveData<Event<String>> getSnackBarText() {
@@ -45,7 +44,7 @@ public class VerifyModel extends ViewModel {
     }
 
     public void addAccount(View view) {
-        new Thread() {
+        ThreadPoolFactory.getNormalThreadPoolProxy().execute(new Runnable() {
             @Override
             public void run() {
                 Properties props = System.getProperties();
@@ -83,7 +82,8 @@ public class VerifyModel extends ViewModel {
                     }
                 }
             }
-        }.start();
+        });
+
     }
 
     private void saveAccount() {

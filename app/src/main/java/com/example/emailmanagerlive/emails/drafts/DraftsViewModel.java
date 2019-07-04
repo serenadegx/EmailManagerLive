@@ -12,6 +12,7 @@ import com.example.emailmanagerlive.data.Email;
 import com.example.emailmanagerlive.data.source.EmailDataSource;
 import com.example.emailmanagerlive.data.source.EmailRepository;
 import com.example.emailmanagerlive.emails.EmailsViewModel;
+import com.example.emailmanagerlive.utils.ThreadPoolFactory;
 
 import java.util.Collections;
 import java.util.List;
@@ -56,12 +57,12 @@ public class DraftsViewModel implements EmailsViewModel, EmailDataSource.GetEmai
 
     public void loadDrafts() {
         mDataLoading.setValue(true);
-        new Thread(){
+        ThreadPoolFactory.getNormalThreadPoolProxy().execute(new Runnable() {
             @Override
             public void run() {
                 mRepository.loadDrafts(mAccount, DraftsViewModel.this);
             }
-        }.start();
+        });
     }
 
     public LiveData<Boolean> isDataLoading() {

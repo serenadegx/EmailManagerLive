@@ -19,6 +19,7 @@ import com.example.emailmanagerlive.data.EmailParams;
 import com.example.emailmanagerlive.data.source.EmailDataSource;
 import com.example.emailmanagerlive.data.source.EmailRepository;
 import com.example.emailmanagerlive.send.SendEmailActivity;
+import com.example.emailmanagerlive.utils.ThreadPoolFactory;
 
 import java.io.File;
 import java.util.List;
@@ -102,12 +103,13 @@ public class EmailViewModel extends ViewModel implements EmailDataSource.GetEmai
         } else {
             title.postValue("草稿箱");
         }
-        new Thread() {
+
+        ThreadPoolFactory.getNormalThreadPoolProxy().execute(new Runnable() {
             @Override
             public void run() {
                 mRepository.getEmail(mAccount, mEmailParams, EmailViewModel.this);
             }
-        }.start();
+        });
 
     }
 
@@ -149,7 +151,7 @@ public class EmailViewModel extends ViewModel implements EmailDataSource.GetEmai
     }
 
     private void realDelete() {
-        new Thread() {
+        ThreadPoolFactory.getNormalThreadPoolProxy().execute(new Runnable() {
             @Override
             public void run() {
                 mRepository.delete(mAccount, mEmailParams, new EmailDataSource.CallBack() {
@@ -166,6 +168,6 @@ public class EmailViewModel extends ViewModel implements EmailDataSource.GetEmai
                     }
                 });
             }
-        }.start();
+        });
     }
 }

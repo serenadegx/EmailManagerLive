@@ -276,98 +276,6 @@ public class EmailRemoteDataSource implements EmailDataSource {
         }
     }
 
-//    public void getSentEmail(final Account account, long id, GetEmailCallBack callBack) {
-//        showStructure = true;
-//        Email data;
-//        Properties props = System.getProperties();
-//        props.put(account.getConfig().getReceiveHostKey(), account.getConfig().getReceiveHostValue());
-//        props.put(account.getConfig().getReceivePortKey(), account.getConfig().getReceivePortValue());
-//        props.put(account.getConfig().getReceiveEncryptKey(), account.getConfig().getReceiveEncryptValue());
-//        Session session = Session.getInstance(props, new Authenticator() {
-//            @Override
-//            protected PasswordAuthentication getPasswordAuthentication() {
-//                return new PasswordAuthentication(
-//                        account.getAccount(), account.getPwd());
-//            }
-//        });
-////        session.setDebug(true);
-//        Store store = null;
-//        Folder inbox = null;
-//        try {
-//            store = session.getStore(account.getConfig().getReceiveProtocol());
-//            store.connect();
-//            inbox = store.getFolder("Sent Messages");
-//            inbox.open(Folder.READ_ONLY);
-//            Message message = inbox.getMessage((int) id);
-//            data = new Email();
-//            data.setAttachments(new ArrayList<Attachment>());
-//            dumpPart(message, data);
-//            showStructure = false;
-//            callBack.onEmailLoaded(data);
-//        } catch (NoSuchProviderException e) {
-//            e.printStackTrace();
-//            callBack.onDataNotAvailable();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            callBack.onDataNotAvailable();
-//        } finally {
-//            try {
-//                if (inbox != null)
-//                    inbox.close();
-//                if (store != null)
-//                    store.close();
-//            } catch (MessagingException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
-//
-//    public void getDraft(final Account account, long id, GetEmailCallBack callBack) {
-//        showStructure = true;
-//        Email data;
-//        Properties props = System.getProperties();
-//        props.put(account.getConfig().getReceiveHostKey(), account.getConfig().getReceiveHostValue());
-//        props.put(account.getConfig().getReceivePortKey(), account.getConfig().getReceivePortValue());
-//        props.put(account.getConfig().getReceiveEncryptKey(), account.getConfig().getReceiveEncryptValue());
-//        Session session = Session.getInstance(props, new Authenticator() {
-//            @Override
-//            protected PasswordAuthentication getPasswordAuthentication() {
-//                return new PasswordAuthentication(
-//                        account.getAccount(), account.getPwd());
-//            }
-//        });
-////        session.setDebug(true);
-//        Store store = null;
-//        Folder inbox = null;
-//        try {
-//            store = session.getStore(account.getConfig().getReceiveProtocol());
-//            store.connect();
-//            inbox = store.getFolder("Drafts");
-//            inbox.open(Folder.READ_ONLY);
-//            Message message = inbox.getMessage((int) id);
-//            data = new Email();
-//            data.setAttachments(new ArrayList<Attachment>());
-//            dumpPart(message, data);
-//            showStructure = false;
-//            callBack.onEmailLoaded(data);
-//        } catch (NoSuchProviderException e) {
-//            e.printStackTrace();
-//            callBack.onDataNotAvailable();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            callBack.onDataNotAvailable();
-//        } finally {
-//            try {
-//                if (inbox != null)
-//                    inbox.close();
-//                if (store != null)
-//                    store.close();
-//            } catch (MessagingException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
-
     public void send(final Account account, Email email, CallBack callBack) {
         Properties props = System.getProperties();
         props.put(account.getConfig().getSendHostKey(), account.getConfig().getSendHostValue());
@@ -420,6 +328,7 @@ public class EmailRemoteDataSource implements EmailDataSource {
             t = (SMTPTransport) session.getTransport(account.getConfig().getSendProtocol());
             t.connect();
             t.sendMessage(msg, msg.getAllRecipients());
+            save2Sent(account, msg);
             callBack.onSuccess();
         } catch (SendFailedException e) {
             e.printStackTrace();
@@ -500,6 +409,7 @@ public class EmailRemoteDataSource implements EmailDataSource {
             t = (SMTPTransport) session.getTransport(account.getConfig().getSendProtocol());
             t.connect();
             t.sendMessage(forward, forward.getAllRecipients());
+            save2Sent(account, forward);
             callBack.onSuccess();
         } catch (NoSuchProviderException e) {
             callBack.onError();
@@ -577,50 +487,6 @@ public class EmailRemoteDataSource implements EmailDataSource {
             }
         }
     }
-
-//    public void deleteByType(final Account account, long id, int type, CallBack callBack) {
-//        Properties props = System.getProperties();
-//        props.put(account.getConfig().getReceiveHostKey(), account.getConfig().getReceiveHostValue());
-//        props.put(account.getConfig().getReceivePortKey(), account.getConfig().getReceivePortValue());
-//        props.put(account.getConfig().getReceiveEncryptKey(), account.getConfig().getReceiveEncryptValue());
-//        Session session = Session.getInstance(props, new Authenticator() {
-//            @Override
-//            protected PasswordAuthentication getPasswordAuthentication() {
-//                return new PasswordAuthentication(
-//                        account.getAccount(), account.getPwd());
-//            }
-//        });
-////        session.setDebug(true);
-//        Store store = null;
-//        Folder inbox = null;
-//        try {
-//            store = session.getStore(account.getConfig().getReceiveProtocol());
-//            store.connect();
-//            if (type == 2) {
-//                inbox = store.getFolder("Sent Messages");
-//            } else {
-//                inbox = store.getFolder("Drafts");
-//            }
-//            inbox.open(Folder.READ_WRITE);
-//            Message message = inbox.getMessage((int) id);
-//            message.setFlag(Flags.Flag.DELETED, true);
-//            callBack.onSuccess();
-//        } catch (NoSuchProviderException e) {
-//            e.printStackTrace();
-//        } catch (MessagingException e) {
-//            callBack.onError();
-//            e.printStackTrace();
-//        } finally {
-//            try {
-//                if (inbox != null)
-//                    inbox.close();
-//                if (store != null)
-//                    store.close();
-//            } catch (MessagingException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
 
     public void save2Drafts(final Account account, Email data, CallBack callBack) {
         Properties props = System.getProperties();
@@ -743,6 +609,46 @@ public class EmailRemoteDataSource implements EmailDataSource {
             try {
                 if (inbox != null)
                     inbox.close();
+                if (store != null)
+                    store.close();
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static void save2Sent(final Account account, Message message) {
+        Properties props = System.getProperties();
+        props.put(account.getConfig().getReceiveHostKey(), account.getConfig().getReceiveHostValue());
+        props.put(account.getConfig().getReceivePortKey(), account.getConfig().getReceivePortValue());
+        props.put(account.getConfig().getReceiveEncryptKey(), account.getConfig().getReceiveEncryptValue());
+        Session session = Session.getInstance(props, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(
+                        account.getAccount(), account.getPwd());
+            }
+        });
+        session.setDebug(true);
+        Store store = null;
+        Folder sent = null;
+        try {
+            store = session.getStore(account.getConfig().getReceiveProtocol());
+            store.connect();
+            sent = store.getFolder("Sent Messages");
+            sent.open(Folder.READ_WRITE);
+            message.setFlag(Flags.Flag.SEEN, true); // 设置已读标志
+            sent.appendMessages(new Message[]{message});
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (sent != null)
+                    sent.close();
                 if (store != null)
                     store.close();
             } catch (MessagingException e) {

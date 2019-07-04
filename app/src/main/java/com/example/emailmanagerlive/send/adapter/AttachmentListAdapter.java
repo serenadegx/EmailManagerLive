@@ -24,6 +24,7 @@ import com.example.emailmanagerlive.data.source.EmailRepository;
 import com.example.emailmanagerlive.send.SendEmailViewModel;
 import com.example.emailmanagerlive.utils.BaseAdapter;
 import com.example.emailmanagerlive.utils.BaseViewHolder;
+import com.example.emailmanagerlive.utils.ThreadPoolFactory;
 import com.google.android.material.snackbar.Snackbar;
 import com.sun.mail.imap.protocol.ID;
 
@@ -98,17 +99,6 @@ public class AttachmentListAdapter extends BaseAdapter<Attachment, BaseViewHolde
 
     }
 
-//    public void download() {
-//        Log.i("mango","download");
-//        for (int i = 0; i < mData.size(); i++) {
-//            final Attachment attachment = mData.get(i);
-//            final File file = new File(attachment.getPath());
-//            if (!file.exists()) {
-//                realDownload(attachment, i);
-//            }
-//        }
-//    }
-
     @Override
     public void onProgress(int index, float percent) {
         Attachment attachment = mData.get(index);
@@ -145,13 +135,13 @@ public class AttachmentListAdapter extends BaseAdapter<Attachment, BaseViewHolde
     }
 
     private void realDownload(final Attachment item, final int index) {
-        new Thread() {
+        ThreadPoolFactory.getNormalThreadPoolProxy().execute(new Runnable() {
             @Override
             public void run() {
                 File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/EmailManager", item.getFileName());
                 EmailRepository.provideRepository().download(mAccount, file, mEmailParams, index,
                         item.getTotal(), AttachmentListAdapter.this);
             }
-        }.start();
+        });
     }
 }

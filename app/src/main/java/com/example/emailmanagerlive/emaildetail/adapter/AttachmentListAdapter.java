@@ -26,6 +26,7 @@ import com.example.emailmanagerlive.data.source.EmailDataSource;
 import com.example.emailmanagerlive.data.source.EmailRepository;
 import com.example.emailmanagerlive.utils.BaseAdapter;
 import com.example.emailmanagerlive.utils.BaseViewHolder;
+import com.example.emailmanagerlive.utils.ThreadPoolFactory;
 import com.example.multifile.XRMultiFile;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -132,12 +133,12 @@ public class AttachmentListAdapter extends BaseAdapter<Attachment, BaseViewHolde
         progressDialog.setProgress(0);
         progressDialog.setCancelable(false);
         progressDialog.show();
-        new Thread() {
+        ThreadPoolFactory.getDownLoadThreadPoolProxy().execute(new Runnable() {
             @Override
             public void run() {
                 mRepository.download(EmailApplication.getAccount(), file, mEmailParams, position,
                         mData.get(position).getTotal(), AttachmentListAdapter.this);
             }
-        }.start();
+        });
     }
 }

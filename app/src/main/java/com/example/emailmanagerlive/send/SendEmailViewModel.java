@@ -16,6 +16,7 @@ import com.example.emailmanagerlive.data.Email;
 import com.example.emailmanagerlive.data.EmailParams;
 import com.example.emailmanagerlive.data.source.EmailDataSource;
 import com.example.emailmanagerlive.data.source.EmailRepository;
+import com.example.emailmanagerlive.utils.ThreadPoolFactory;
 import com.example.multifile.XRMultiFile;
 
 import java.io.File;
@@ -83,7 +84,6 @@ public class SendEmailViewModel extends ViewModel implements EmailDataSource.Cal
     public void start(EmailParams params, Email data) {
         this.mEmailParams = params;
         this.mEmail = data;
-        receiver.setValue("1099805713@qq.com");
         send.setValue(EmailApplication.getAccount().getAccount());
         if (data != null) {
             if (params.getFunction() == EmailParams.Function.REPLY) {
@@ -115,12 +115,12 @@ public class SendEmailViewModel extends ViewModel implements EmailDataSource.Cal
         email.setSubject(subject.getValue());
         email.setContent(content.getValue());
         email.setAttachments(items.getValue());
-        new Thread() {
+        ThreadPoolFactory.getNormalThreadPoolProxy().execute(new Runnable() {
             @Override
             public void run() {
                 mRepository.send(mAccount, email, SendEmailViewModel.this);
             }
-        }.start();
+        });
 
     }
 
@@ -136,12 +136,12 @@ public class SendEmailViewModel extends ViewModel implements EmailDataSource.Cal
         email.setAppend(content.getValue());
         email.setContent(mEmail.getContent());
         email.setAttachments(items.getValue());
-        new Thread() {
+        ThreadPoolFactory.getNormalThreadPoolProxy().execute(new Runnable() {
             @Override
             public void run() {
                 mRepository.reply(mAccount, email, SendEmailViewModel.this);
             }
-        }.start();
+        });
     }
 
     public void forward() {
@@ -156,12 +156,12 @@ public class SendEmailViewModel extends ViewModel implements EmailDataSource.Cal
         email.setAppend(content.getValue());
         email.setContent(mEmail.getContent());
         email.setAttachments(items.getValue());
-        new Thread() {
+        ThreadPoolFactory.getNormalThreadPoolProxy().execute(new Runnable() {
             @Override
             public void run() {
                 mRepository.forward(mAccount, email, SendEmailViewModel.this);
             }
-        }.start();
+        });
     }
 
     public void save2Drafts() {
@@ -174,13 +174,13 @@ public class SendEmailViewModel extends ViewModel implements EmailDataSource.Cal
         email.setSubject(subject.getValue());
         email.setContent(content.getValue());
         email.setAttachments(items.getValue());
-        new Thread() {
+        ThreadPoolFactory.getNormalThreadPoolProxy().execute(new Runnable() {
             @Override
             public void run() {
                 mRepository.save2Drafts(mAccount, email, new EmailDataSource.CallBack() {
                     @Override
                     public void onSuccess() {
-                        snackBarText.postValue(new Event<>("发送成功"));
+                        snackBarText.postValue(new Event<>("保存成功"));
                         mNavigator.onSaved();
                     }
 
@@ -190,7 +190,7 @@ public class SendEmailViewModel extends ViewModel implements EmailDataSource.Cal
                     }
                 });
             }
-        }.start();
+        });
     }
 
     public void delete(Attachment item) {
