@@ -16,7 +16,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -92,7 +91,6 @@ public class EmailRemoteDataSource implements EmailDataSource {
 //                dumpEnvelope(message, emailDetail);
                 data.add(emailDetail);
             }
-            //排序
         } catch (NoSuchProviderException e) {
             callBack.onDataNotAvailable();
             e.printStackTrace();
@@ -144,7 +142,6 @@ public class EmailRemoteDataSource implements EmailDataSource {
                 dumpEnvelope(message, emailDetail);
                 data.add(emailDetail);
             }
-            //排序
         } catch (NoSuchProviderException e) {
             callBack.onDataNotAvailable();
             e.printStackTrace();
@@ -196,7 +193,6 @@ public class EmailRemoteDataSource implements EmailDataSource {
                 dumpEnvelope(message, emailDetail);
                 data.add(emailDetail);
             }
-            //排序
         } catch (NoSuchProviderException e) {
             callBack.onDataNotAvailable();
             e.printStackTrace();
