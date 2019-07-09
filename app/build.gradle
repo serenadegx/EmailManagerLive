@@ -46,8 +46,12 @@ dependencies {
     implementation 'com.sun.mail:android-mail:1.6.2'
     implementation 'com.sun.mail:android-activation:1.6.2'
 
+    implementation "android.arch.work:work-runtime:1.0.0"
+    // optional - Test helpers
+    androidTestImplementation "android.arch.work:work-testing:1.0.0"
+
     //数据库配置
     implementation 'org.greenrobot:greendao:3.2.2'
-//    //文件选择
+    //文件选择
     implementation 'com.github.serenadegx:XRMultiFile:1.0.1'
 }

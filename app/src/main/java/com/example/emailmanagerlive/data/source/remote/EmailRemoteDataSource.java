@@ -758,7 +758,7 @@ public class EmailRemoteDataSource implements EmailDataSource {
         }
     }
 
-    private static void dumpPart(Part p, Email data) {
+    public static void dumpPart(Part p, Email data) {
         try {
             if (p instanceof Message) {
                 dumpEnvelope((Message) p, data);

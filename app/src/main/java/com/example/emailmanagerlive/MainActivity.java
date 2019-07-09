@@ -16,6 +16,10 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.work.Constraints;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import com.example.emailmanagerlive.data.EmailParams;
 import com.example.emailmanagerlive.emails.drafts.DraftsFragment;
@@ -24,6 +28,8 @@ import com.example.emailmanagerlive.emails.sent.SentFragment;
 import com.example.emailmanagerlive.send.SendEmailActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -54,6 +60,22 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
         replaceFragmentInActivity(InboxFragment.newInstance(), getSupportFragmentManager());
+        //启动新消息提醒任务
+        startNewEmailWorker();
+    }
+
+    private void startNewEmailWorker() {
+        //设置约束条件
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)//网络可用
+                .setRequiresBatteryNotLow(false)//设备电池是否不应低于临界阈值,默认false
+                .build();
+
+        PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(NewEmailWorker.class,
+                1, TimeUnit.MINUTES)//一分钟执行一次
+                .setConstraints(constraints)
+                .build();
+        WorkManager.getInstance().enqueue(workRequest);
     }
 
     private void replaceFragmentInActivity(Fragment fragment, FragmentManager fragmentManager) {

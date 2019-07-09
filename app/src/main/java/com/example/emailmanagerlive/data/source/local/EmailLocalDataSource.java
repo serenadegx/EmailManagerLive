@@ -62,4 +62,8 @@ public class EmailLocalDataSource implements EmailDataSource {
     public void saveAll(List<Email> emails) {
         dao.insertInTx(emails);
     }
+
+    public void save(Email email) {
+        dao.insert(email);
+    }
 }

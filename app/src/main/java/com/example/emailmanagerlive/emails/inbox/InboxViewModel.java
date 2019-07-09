@@ -46,7 +46,7 @@ public class InboxViewModel extends ViewModel implements EmailsViewModel, EmailD
 
     @Override
     public void onEmailsLoaded(List<Email> emails) {
-        Collections.reverse(emails);
+        Collections.sort(emails);
         mDataLoading.postValue(false);
         items.postValue(emails);
     }

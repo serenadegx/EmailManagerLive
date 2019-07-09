@@ -16,7 +16,7 @@ import java.util.List;
 import org.greenrobot.greendao.annotation.Generated;
 
 @Entity
-public class Email extends BaseObservable implements Parcelable{
+public class Email extends BaseObservable implements Parcelable,Comparable<Email>{
     @Id
     private Long id;
     private boolean isRead;
@@ -240,5 +240,10 @@ public class Email extends BaseObservable implements Parcelable{
         dest.writeString(append);
         dest.writeByte((byte) (hasAttach ? 1 : 0));
         dest.writeTypedList(attachments);
+    }
+
+    @Override
+    public int compareTo(Email o) {
+        return o.getId().compareTo(this.getId());
     }
 }
