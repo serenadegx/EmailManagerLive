@@ -41,8 +41,8 @@
             android:textColor="@android:color/black"
             android:text="@{item.fileName}"
             android:textSize="14sp"
-            android:ellipsize="end"
-            android:maxLines="1"
+            android:ellipsize="middle"
+            android:singleLine="true"
             app:layout_constraintLeft_toRightOf="@id/iv_file"
             app:layout_constraintTop_toTopOf="@id/iv_file" />
 

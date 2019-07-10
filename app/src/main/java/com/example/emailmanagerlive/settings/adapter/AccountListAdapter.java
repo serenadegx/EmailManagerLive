@@ -1,4 +1,4 @@
-package com.example.emailmanagerlive.emails.adapter;
+package com.example.emailmanagerlive.settings.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,23 +10,23 @@ import androidx.lifecycle.LifecycleOwner;
 
 import com.example.emailmanagerlive.BR;
 import com.example.emailmanagerlive.R;
-import com.example.emailmanagerlive.data.Email;
-import com.example.emailmanagerlive.data.EmailParams;
-import com.example.emailmanagerlive.emaildetail.EmailDetailActivity;
+import com.example.emailmanagerlive.data.Account;
+import com.example.emailmanagerlive.data.Attachment;
 import com.example.emailmanagerlive.utils.BaseAdapter;
 import com.example.emailmanagerlive.utils.BaseViewHolder;
 
-public class InboxListAdapter extends BaseAdapter<Email, BaseViewHolder> {
+public class AccountListAdapter extends BaseAdapter<Attachment, BaseViewHolder> {
     private LifecycleOwner mLifecycleOwner;
+    private ViewDataBinding dataBinding;
 
-    public InboxListAdapter(Context context, LifecycleOwner activity) {
+    public AccountListAdapter(Context context, LifecycleOwner lifecycleOwner) {
         super(context);
-        mLifecycleOwner = activity;
+        this.mLifecycleOwner = lifecycleOwner;
     }
 
     @Override
     public BaseViewHolder onCreateVH(ViewGroup parent, int viewType) {
-        ViewDataBinding dataBinding = DataBindingUtil.inflate(LayoutInflater.from(mContext), R.layout.item_inbox, parent, false);
+        dataBinding = DataBindingUtil.inflate(LayoutInflater.from(mContext), R.layout.item_account, parent, false);
         return new BaseViewHolder(dataBinding);
     }
 
@@ -41,12 +41,8 @@ public class InboxListAdapter extends BaseAdapter<Email, BaseViewHolder> {
 
     }
 
-    public void goNext(Email item, int position) {
-        EmailParams params = new EmailParams();
-        params.setType(EmailParams.Type.INBOX);
-        params.setId(item.getId());
+    public void switchAccount(Account item, int position) {
 
-//        EmailDetailActivity.start2EmailDetailActivity(mContext, item.getId(),EmailDetailActivity.INBOX);
-        EmailDetailActivity.start2EmailDetailActivity(mContext, params);
     }
+
 }

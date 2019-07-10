@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="item"
+            type="com.example.emailmanagerlive.data.Account" />
+
+        <variable
+            name="adapter"
+            type="com.example.emailmanagerlive.settings.adapter.AccountListAdapter" />
+
+        <variable
+            name="position"
+            type="int" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:foreground="?selectableItemBackground"
+        android:onClick="@{()->adapter.switchAccount(item,position)}"
+        android:padding="12dp">
+
+        <TextView
+            android:textColor="@android:color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@{item.account}" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|right"
+            android:src="@mipmap/icon_selected"
+            android:visibility="@{item.isCur ? View.VISIBLE : View.INVISIBLE}" />
+    </FrameLayout>
+</layout>

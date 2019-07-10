@@ -66,4 +66,9 @@ public class EmailLocalDataSource implements EmailDataSource {
     public void save(Email email) {
         dao.insert(email);
     }
+
+    public void signRead(Email email) {
+        email.setRead(true);
+        dao.update(email);
+    }
 }

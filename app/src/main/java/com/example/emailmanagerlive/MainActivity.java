@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.work.Constraints;
+import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
@@ -26,10 +27,12 @@ import com.example.emailmanagerlive.emails.drafts.DraftsFragment;
 import com.example.emailmanagerlive.emails.inbox.InboxFragment;
 import com.example.emailmanagerlive.emails.sent.SentFragment;
 import com.example.emailmanagerlive.send.SendEmailActivity;
+import com.example.emailmanagerlive.settings.SettingsActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.concurrent.TimeUnit;
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -47,7 +50,7 @@ public class MainActivity extends AppCompatActivity
                 EmailParams params = new EmailParams();
                 params.setType(EmailParams.Type.INBOX);
                 params.setFunction(EmailParams.Function.NORMAL_SEND);
-                SendEmailActivity.start2SendEmailActivity(MainActivity.this, params,null);
+                SendEmailActivity.start2SendEmailActivity(MainActivity.this, params, null);
             }
         });
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -68,14 +71,14 @@ public class MainActivity extends AppCompatActivity
         //设置约束条件
         Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)//网络可用
-                .setRequiresBatteryNotLow(false)//设备电池是否不应低于临界阈值,默认false
                 .build();
 
         PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(NewEmailWorker.class,
-                1, TimeUnit.MINUTES)//一分钟执行一次
+                5, TimeUnit.MINUTES)//五分钟分钟执行一次
                 .setConstraints(constraints)
                 .build();
-        WorkManager.getInstance().enqueue(workRequest);
+        WorkManager.getInstance().enqueueUniquePeriodicWork("NewEmail",
+                ExistingPeriodicWorkPolicy.REPLACE, workRequest);
     }
 
     private void replaceFragmentInActivity(Fragment fragment, FragmentManager fragmentManager) {
@@ -129,7 +132,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_drafts) {
             replaceFragmentInActivity(DraftsFragment.newInstance(), getSupportFragmentManager());
         } else if (id == R.id.nav_tools) {
-
+            SettingsActivity.startForResult2SettingsActivity(this);
         } else if (id == R.id.nav_share) {
 
         }

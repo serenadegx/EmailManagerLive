@@ -1,5 +1,8 @@
 package com.example.emailmanagerlive.data;
 
+import androidx.databinding.BaseObservable;
+import androidx.databinding.Bindable;
+
 import org.greenrobot.greendao.DaoException;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
@@ -8,7 +11,7 @@ import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.ToOne;
 
 @Entity
-public class Account {
+public class Account extends BaseObservable {
     @Id(autoincrement = true)
     private long id;
     @NotNull
@@ -94,6 +97,7 @@ public class Account {
         return id;
     }
 
+    @Bindable
     public String getAccount() {
         return account;
     }
@@ -127,6 +131,7 @@ public class Account {
         return config;
     }
 
+    @Bindable
     public boolean isCur() {
         return isCur;
     }

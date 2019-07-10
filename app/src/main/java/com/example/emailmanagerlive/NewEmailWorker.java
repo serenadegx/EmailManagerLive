@@ -19,11 +19,8 @@ import com.example.emailmanagerlive.data.Account;
 import com.example.emailmanagerlive.data.Email;
 import com.example.emailmanagerlive.data.source.local.EmailLocalDataSource;
 import com.example.emailmanagerlive.data.source.remote.EmailRemoteDataSource;
-import com.example.emailmanagerlive.utils.ThreadPoolFactory;
 import com.sun.mail.imap.IMAPFolder;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 import javax.mail.Authenticator;
@@ -44,9 +41,11 @@ public class NewEmailWorker extends Worker {
     public static final String PRIMARY_CHANNEL = "default";
     private final Session session;
     private final Account account;
+    private final EmailLocalDataSource dataSource;
 
     public NewEmailWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
+        dataSource = EmailLocalDataSource.getInstance(EmailApplication.getDaoSession().getEmailDao());
         account = EmailApplication.getAccount();
         Properties props = System.getProperties();
         props.put(account.getConfig().getReceiveHostKey(), account.getConfig().getReceiveHostValue());
@@ -65,6 +64,7 @@ public class NewEmailWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
+        Log.i("Mango", "Update New Email");
         Store store = null;
         try {
             store = session.getStore(account.getConfig().getReceiveProtocol());
@@ -112,8 +112,8 @@ public class NewEmailWorker extends Worker {
 //        List<Email> data = new ArrayList<>();
         for (Message message : messages) {
             Email email = new Email();
-            EmailRemoteDataSource.dumpPart(message,email);
-            EmailLocalDataSource.getInstance(EmailApplication.getDaoSession().getEmailDao()).save(email);
+            EmailRemoteDataSource.dumpPart(message, email);
+            dataSource.save(email);
         }
     }
 

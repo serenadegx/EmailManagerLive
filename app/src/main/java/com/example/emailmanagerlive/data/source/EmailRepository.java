@@ -57,16 +57,19 @@ public class EmailRepository implements EmailDataSource {
 
     @Override
     public void getEmail(Account account, EmailParams params, final GetEmailCallBack callBack) {
-        mRemoteDataSource.getEmail(account, params, callBack);
-    }
+        mRemoteDataSource.getEmail(account, params, new GetEmailCallBack() {
+            @Override
+            public void onEmailLoaded(Email email) {
+                mLocalDataSource.signRead(email);
+                callBack.onEmailLoaded(email);
+            }
 
-//    public void getSentEmail(Account account, long id, final GetEmailCallBack callBack) {
-//        mRemoteDataSource.getSentEmail(account, id, callBack);
-//    }
-//
-//    public void getDraft(Account account, long id, final GetEmailCallBack callBack) {
-//        mRemoteDataSource.getDraft(account, id, callBack);
-//    }
+            @Override
+            public void onDataNotAvailable() {
+                callBack.onDataNotAvailable();
+            }
+        });
+    }
 
     @Override
     public void delete(final Account account, final EmailParams params, final CallBack callBack) {
@@ -82,14 +85,6 @@ public class EmailRepository implements EmailDataSource {
             }
         });
     }
-
-//    public void deleteByType(Account account, long id, int type, CallBack callBack) {
-//        if (type == 1) {
-//            delete(account, id, callBack);
-//        } else {
-//            mRemoteDataSource.deleteByType(account, id, type, callBack);
-//        }
-//    }
 
     /**
      * 刷新数据

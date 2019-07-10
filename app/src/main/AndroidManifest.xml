@@ -24,12 +24,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".MainActivity"/>
+        <activity android:name=".MainActivity" />
         <activity android:name=".account.VerifyActivity" />
-        <activity android:name=".account.EmailCategoryActivity" android:theme="@style/AppTheme"/>
-        <activity android:name=".emaildetail.EmailDetailActivity" android:theme="@style/AppTheme"/>
-        <activity android:name=".send.SendEmailActivity" android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".account.EmailCategoryActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".emaildetail.EmailDetailActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".send.SendEmailActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>
