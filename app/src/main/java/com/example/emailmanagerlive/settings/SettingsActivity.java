@@ -10,6 +10,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
@@ -21,6 +22,9 @@ import com.example.emailmanagerlive.databinding.ActivitySettingsBinding;
 
 public class SettingsActivity extends AppCompatActivity implements SettingsNavigator {
 
+    public static final String SETTINGS = "settings";
+    public static final String SIGN_TAG = "editSignature";
+
     private static final int REQUEST_CODE = 715;
     private ActivitySettingsBinding binding;
     private SettingsViewModel mSettingsViewModel;
@@ -31,16 +35,10 @@ public class SettingsActivity extends AppCompatActivity implements SettingsNavig
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_settings);
         setupToolbar();
-        replaceFragmentInActivity();
+        replaceFragmentInActivity(SETTINGS);
         mSettingsViewModel = obtainViewModel(this);
+        mSettingsViewModel.setNavigator(this);
 
-    }
-
-    private void replaceFragmentInActivity() {
-        SettingsFragment fragment = findOrCreateFragment();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.content, fragment);
-        transaction.commit();
     }
 
     @Override
@@ -62,22 +60,59 @@ public class SettingsActivity extends AppCompatActivity implements SettingsNavig
 
     }
 
+    @Override
+    public void editSignature() {
+        binding.toolbar.setTitle("修改签名");
+        replaceFragmentInActivity(SIGN_TAG);
+    }
+
+    @Override
+    public void editSignatureSuccess() {
+        binding.toolbar.setTitle("设置");
+        replaceFragmentInActivity(SETTINGS);
+    }
+
+    @Override
+    public void onBackPressed() {
+        backSelf();
+    }
+
     private void setupToolbar() {
         setSupportActionBar(binding.toolbar);
         binding.toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                backSelf();
             }
         });
     }
 
-    private SettingsFragment findOrCreateFragment() {
-        SettingsFragment fragment = (SettingsFragment) getSupportFragmentManager().findFragmentById(R.id.content);
+    private void replaceFragmentInActivity(String tag) {
+        Fragment fragment = findOrCreateFragment(tag);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.content, fragment);
+        transaction.commit();
+    }
+
+    private Fragment findOrCreateFragment(String tag) {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
         if (fragment == null) {
-            fragment = SettingsFragment.newInstance();
+            if (SETTINGS.equals(tag)) {
+                fragment = SettingsFragment.newInstance();
+            } else {
+                fragment = EditSignatureFragment.newInstance();
+            }
         }
         return fragment;
+    }
+
+    private void backSelf(){
+        if (getSupportFragmentManager().findFragmentById(R.id.content) instanceof SettingsFragment){
+            finish();
+        }else {
+            binding.toolbar.setTitle("设置");
+            replaceFragmentInActivity(SETTINGS);
+        }
     }
 
     public static SettingsViewModel obtainViewModel(FragmentActivity activity) {

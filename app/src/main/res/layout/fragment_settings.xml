@@ -52,7 +52,7 @@
                     android:textColor="@android:color/black" />
 
                 <EditText
-                    android:layout_width="150dp"
+                    android:layout_width="180dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
@@ -67,10 +67,11 @@
                 android:background="#EEE" />
 
             <RelativeLayout
-                android:onClick="@{viewModel::editSignature}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white">
+                android:background="@android:color/white"
+                android:foreground="?selectableItemBackground"
+                android:onClick="@{viewModel::editSignature}">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -106,7 +107,7 @@
                     android:textColor="@android:color/black" />
 
                 <EditText
-                    android:layout_width="150dp"
+                    android:layout_width="180dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
@@ -160,7 +161,7 @@
                     android:textColor="@android:color/black" />
 
                 <EditText
-                    android:layout_width="150dp"
+                    android:layout_width="180dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
@@ -214,12 +215,14 @@
                     android:textColor="@android:color/black" />
 
                 <Switch
+                    android:id="@+id/toggle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="12dp"
-                    android:checked="@{viewModel.isNotify}" />
+                    android:checked="@{viewModel.isNotify}"
+                    android:onCheckedChanged="@{viewModel.listener}" />
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>

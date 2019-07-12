@@ -1,9 +1,11 @@
 package com.example.emailmanagerlive.settings;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,24 +24,11 @@ public class SettingsFragment extends Fragment {
     private SettingsViewModel mViewModel;
     private FragmentSettingsBinding binding;
 
-    public static SettingsFragment newInstance() {
-        return new SettingsFragment();
-    }
-
-    public void setViewModel(SettingsViewModel viewModel) {
-        this.mViewModel = viewModel;
-    }
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setupListAdapter();
         setupSnackBar();
-    }
-
-    private void setupListAdapter() {
-        AccountListAdapter listAdapter = new AccountListAdapter(getContext(), this);
-        binding.rv.setAdapter(listAdapter);
     }
 
     @Nullable
@@ -51,13 +40,28 @@ public class SettingsFragment extends Fragment {
         mViewModel = SettingsActivity.obtainViewModel(getActivity());
         binding.setViewModel(mViewModel);
         binding.setLifecycleOwner(this);
+        binding.toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+            }
+        });
         return binding.getRoot();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        mViewModel.start();
+        mViewModel.start(getActivity().getSharedPreferences("email", Context.MODE_PRIVATE));
+    }
+
+    public void setViewModel(SettingsViewModel viewModel) {
+        this.mViewModel = viewModel;
+    }
+
+    private void setupListAdapter() {
+        AccountListAdapter listAdapter = new AccountListAdapter(getContext(), this);
+        binding.rv.setAdapter(listAdapter);
     }
 
     private void setupSnackBar() {
@@ -69,5 +73,9 @@ public class SettingsFragment extends Fragment {
                     Snackbar.make(getView(), msg, Snackbar.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public static SettingsFragment newInstance() {
+        return new SettingsFragment();
     }
 }
