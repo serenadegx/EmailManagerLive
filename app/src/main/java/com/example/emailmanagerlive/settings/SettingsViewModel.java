@@ -57,10 +57,7 @@ public class SettingsViewModel extends ViewModel {
         List<Account> list = mAccountDao.queryBuilder().where(AccountDao.Properties.IsCur.eq(true)).list();
         if (list != null && list.size() > 0) {
             Account curAccount = list.get(0);
-            receiveHost.setValue(curAccount.getConfig().getReceiveHostValue());
-            receivePort.setValue(curAccount.getConfig().getReceivePortValue());
-            sendHost.setValue(curAccount.getConfig().getSendHostValue());
-            sendPort.setValue(curAccount.getConfig().getSendPortValue());
+            personal.setValue(curAccount.getPersonal());
         }
         isNotify.setValue(sp.getBoolean("isNotify", false));
     }
@@ -111,7 +108,7 @@ public class SettingsViewModel extends ViewModel {
         List<Account> list = mAccountDao.queryBuilder().where(AccountDao.Properties.IsCur.eq(true)).list();
         if (list != null && list.size() > 0) {
             Account curAccount = list.get(0);
-            personal.setValue(curAccount.getRemark());
+            signature.setValue(curAccount.getRemark());
         }
     }
 }

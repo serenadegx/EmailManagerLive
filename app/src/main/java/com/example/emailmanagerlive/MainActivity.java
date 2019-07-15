@@ -145,13 +145,6 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == SettingsActivity.REQUEST_CODE){
-            navigationView.setCheckedItem(R.id.nav_inbox);
-            replaceFragmentInActivity(InboxFragment.newInstance(), getSupportFragmentManager());
-        }
-    }
 
     public static void start2MainActivity(Context context) {
         context.startActivity(new Intent(context, MainActivity.class));
