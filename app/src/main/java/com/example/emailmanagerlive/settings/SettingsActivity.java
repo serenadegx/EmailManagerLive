@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.example.emailmanagerlive.EmailApplication;
 import com.example.emailmanagerlive.R;
 import com.example.emailmanagerlive.ViewModelFactory;
 import com.example.emailmanagerlive.data.Account;
@@ -25,7 +26,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsNavig
     public static final String SETTINGS = "settings";
     public static final String SIGN_TAG = "editSignature";
 
-    private static final int REQUEST_CODE = 715;
+    public static final int REQUEST_CODE = 715;
     private ActivitySettingsBinding binding;
     private SettingsViewModel mSettingsViewModel;
     private Account mAccount;
@@ -50,14 +51,20 @@ public class SettingsActivity extends AppCompatActivity implements SettingsNavig
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_done) {
-            mAccount = mSettingsViewModel.modify();
+            if (getSupportFragmentManager().findFragmentById(R.id.content) instanceof SettingsFragment) {
+                mSettingsViewModel.modify();
+            } else {
+                mSettingsViewModel.saveSignature();
+            }
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void onModifySuccess() {
-
+    public void onModifySuccess(Account account) {
+        EmailApplication.setAccount(account);
+        setResult(63);
+        finish();
     }
 
     @Override
@@ -106,10 +113,10 @@ public class SettingsActivity extends AppCompatActivity implements SettingsNavig
         return fragment;
     }
 
-    private void backSelf(){
-        if (getSupportFragmentManager().findFragmentById(R.id.content) instanceof SettingsFragment){
+    private void backSelf() {
+        if (getSupportFragmentManager().findFragmentById(R.id.content) instanceof SettingsFragment) {
             finish();
-        }else {
+        } else {
             binding.toolbar.setTitle("设置");
             replaceFragmentInActivity(SETTINGS);
         }

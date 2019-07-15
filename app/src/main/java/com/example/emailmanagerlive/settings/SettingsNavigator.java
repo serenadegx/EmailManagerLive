@@ -1,7 +1,9 @@
 package com.example.emailmanagerlive.settings;
 
+import com.example.emailmanagerlive.data.Account;
+
 public interface SettingsNavigator {
-    void onModifySuccess();
+    void onModifySuccess(Account account);
 
     void editSignature();
 

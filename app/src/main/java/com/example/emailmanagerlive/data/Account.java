@@ -3,12 +3,12 @@ package com.example.emailmanagerlive.data;
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 
-import org.greenrobot.greendao.DaoException;
 import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.ToOne;
+import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.DaoException;
 
 @Entity
 public class Account extends BaseObservable {
@@ -23,26 +23,24 @@ public class Account extends BaseObservable {
     @ToOne(joinProperty = "configId")
     private Configuration config;
     private boolean isCur;
+    private String personal;
     private String remark;
-    /**
-     * Used to resolve relations
-     */
+    /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
-    /**
-     * Used for active entity operations.
-     */
+    /** Used for active entity operations. */
     @Generated(hash = 335469827)
     private transient AccountDao myDao;
 
-    @Generated(hash = 2084598604)
+    @Generated(hash = 1848656263)
     public Account(long id, @NotNull String account, @NotNull String pwd,
-                   long configId, boolean isCur, String remark) {
+            long configId, boolean isCur, String personal, String remark) {
         this.id = id;
         this.account = account;
         this.pwd = pwd;
         this.configId = configId;
         this.isCur = isCur;
+        this.personal = personal;
         this.remark = remark;
     }
 
@@ -69,24 +67,12 @@ public class Account extends BaseObservable {
         this.configId = configId;
     }
 
-    /**
-     * called by internal mechanisms, do not call yourself.
-     */
-    @Generated(hash = 2109243491)
-    public void setConfig(@NotNull Configuration config) {
-        if (config == null) {
-            throw new DaoException(
-                    "To-one property 'configId' has not-null constraint; cannot set to-one to null");
-        }
-        synchronized (this) {
-            this.config = config;
-            configId = config.getCategoryId();
-            config__resolvedKey = configId;
-        }
-    }
-
     public void setCur(boolean cur) {
         isCur = cur;
+    }
+
+    public void setPersonal(String personal) {
+        this.personal = personal;
     }
 
     public void setRemark(String remark) {
@@ -110,9 +96,28 @@ public class Account extends BaseObservable {
         return configId;
     }
 
-    /**
-     * To-one relationship, resolved on first access.
-     */
+    @Bindable
+    public boolean isCur() {
+        return isCur;
+    }
+
+    public String getPersonal() {
+        return personal;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public boolean getIsCur() {
+        return this.isCur;
+    }
+
+    public void setIsCur(boolean isCur) {
+        this.isCur = isCur;
+    }
+
+    /** To-one relationship, resolved on first access. */
     @Generated(hash = 432318118)
     public Configuration getConfig() {
         long __key = this.configId;
@@ -131,21 +136,18 @@ public class Account extends BaseObservable {
         return config;
     }
 
-    @Bindable
-    public boolean isCur() {
-        return isCur;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public boolean getIsCur() {
-        return this.isCur;
-    }
-
-    public void setIsCur(boolean isCur) {
-        this.isCur = isCur;
+    /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 2109243491)
+    public void setConfig(@NotNull Configuration config) {
+        if (config == null) {
+            throw new DaoException(
+                    "To-one property 'configId' has not-null constraint; cannot set to-one to null");
+        }
+        synchronized (this) {
+            this.config = config;
+            configId = config.getCategoryId();
+            config__resolvedKey = configId;
+        }
     }
 
     /**
@@ -184,12 +186,12 @@ public class Account extends BaseObservable {
         myDao.update(this);
     }
 
-    /**
-     * called by internal mechanisms, do not call yourself.
-     */
+    /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 1812283172)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getAccountDao() : null;
     }
+
+
 }

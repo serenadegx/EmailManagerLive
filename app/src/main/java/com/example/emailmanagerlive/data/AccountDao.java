@@ -30,7 +30,8 @@ public class AccountDao extends AbstractDao<Account, Long> {
         public final static Property Pwd = new Property(2, String.class, "pwd", false, "PWD");
         public final static Property ConfigId = new Property(3, long.class, "configId", false, "CONFIG_ID");
         public final static Property IsCur = new Property(4, boolean.class, "isCur", false, "IS_CUR");
-        public final static Property Remark = new Property(5, String.class, "remark", false, "REMARK");
+        public final static Property Personal = new Property(5, String.class, "personal", false, "PERSONAL");
+        public final static Property Remark = new Property(6, String.class, "remark", false, "REMARK");
     }
 
     private DaoSession daoSession;
@@ -54,7 +55,8 @@ public class AccountDao extends AbstractDao<Account, Long> {
                 "\"PWD\" TEXT NOT NULL ," + // 2: pwd
                 "\"CONFIG_ID\" INTEGER NOT NULL ," + // 3: configId
                 "\"IS_CUR\" INTEGER NOT NULL ," + // 4: isCur
-                "\"REMARK\" TEXT);"); // 5: remark
+                "\"PERSONAL\" TEXT," + // 5: personal
+                "\"REMARK\" TEXT);"); // 6: remark
     }
 
     /** Drops the underlying database table. */
@@ -72,9 +74,14 @@ public class AccountDao extends AbstractDao<Account, Long> {
         stmt.bindLong(4, entity.getConfigId());
         stmt.bindLong(5, entity.getIsCur() ? 1L: 0L);
  
+        String personal = entity.getPersonal();
+        if (personal != null) {
+            stmt.bindString(6, personal);
+        }
+ 
         String remark = entity.getRemark();
         if (remark != null) {
-            stmt.bindString(6, remark);
+            stmt.bindString(7, remark);
         }
     }
 
@@ -87,9 +94,14 @@ public class AccountDao extends AbstractDao<Account, Long> {
         stmt.bindLong(4, entity.getConfigId());
         stmt.bindLong(5, entity.getIsCur() ? 1L: 0L);
  
+        String personal = entity.getPersonal();
+        if (personal != null) {
+            stmt.bindString(6, personal);
+        }
+ 
         String remark = entity.getRemark();
         if (remark != null) {
-            stmt.bindString(6, remark);
+            stmt.bindString(7, remark);
         }
     }
 
@@ -112,7 +124,8 @@ public class AccountDao extends AbstractDao<Account, Long> {
             cursor.getString(offset + 2), // pwd
             cursor.getLong(offset + 3), // configId
             cursor.getShort(offset + 4) != 0, // isCur
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5) // remark
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // personal
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6) // remark
         );
         return entity;
     }
@@ -124,7 +137,8 @@ public class AccountDao extends AbstractDao<Account, Long> {
         entity.setPwd(cursor.getString(offset + 2));
         entity.setConfigId(cursor.getLong(offset + 3));
         entity.setIsCur(cursor.getShort(offset + 4) != 0);
-        entity.setRemark(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setPersonal(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setRemark(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
      }
     
     @Override

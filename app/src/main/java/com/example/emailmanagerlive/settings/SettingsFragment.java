@@ -24,13 +24,6 @@ public class SettingsFragment extends Fragment {
     private SettingsViewModel mViewModel;
     private FragmentSettingsBinding binding;
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        setupListAdapter();
-        setupSnackBar();
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -40,23 +33,20 @@ public class SettingsFragment extends Fragment {
         mViewModel = SettingsActivity.obtainViewModel(getActivity());
         binding.setViewModel(mViewModel);
         binding.setLifecycleOwner(this);
-        binding.toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-            }
-        });
         return binding.getRoot();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        setupListAdapter();
+        setupSnackBar();
     }
 
     @Override
     public void onStart() {
         super.onStart();
         mViewModel.start(getActivity().getSharedPreferences("email", Context.MODE_PRIVATE));
-    }
-
-    public void setViewModel(SettingsViewModel viewModel) {
-        this.mViewModel = viewModel;
     }
 
     private void setupListAdapter() {

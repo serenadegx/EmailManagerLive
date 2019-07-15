@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -37,6 +38,9 @@ import java.util.concurrent.TimeUnit;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private DrawerLayout drawer;
+    private NavigationView navigationView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,8 +57,8 @@ public class MainActivity extends AppCompatActivity
                 SendEmailActivity.start2SendEmailActivity(MainActivity.this, params, null);
             }
         });
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        drawer = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
         View headerView = navigationView.getHeaderView(0);
         ((TextView) headerView.findViewById(R.id.textView)).setText(EmailApplication.getAccount().getAccount());
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -136,10 +140,17 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_share) {
 
         }
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
 
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == SettingsActivity.REQUEST_CODE){
+            navigationView.setCheckedItem(R.id.nav_inbox);
+            replaceFragmentInActivity(InboxFragment.newInstance(), getSupportFragmentManager());
+        }
     }
 
     public static void start2MainActivity(Context context) {

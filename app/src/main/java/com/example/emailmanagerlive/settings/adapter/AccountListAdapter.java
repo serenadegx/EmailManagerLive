@@ -10,11 +10,9 @@ import androidx.lifecycle.LifecycleOwner;
 
 import com.example.emailmanagerlive.BR;
 import com.example.emailmanagerlive.R;
-import com.example.emailmanagerlive.account.EmailCategoryActivity;
 import com.example.emailmanagerlive.data.Account;
 import com.example.emailmanagerlive.data.Attachment;
 import com.example.emailmanagerlive.databinding.ItemAccountBinding;
-import com.example.emailmanagerlive.databinding.ItemAddAccountBinding;
 import com.example.emailmanagerlive.utils.BaseAdapter;
 import com.example.emailmanagerlive.utils.BaseViewHolder;
 
@@ -73,7 +71,8 @@ public class AccountListAdapter extends BaseAdapter<Attachment, BaseViewHolder> 
     }
 
     public void addAccount() {
-        EmailCategoryActivity.start2EmailCategoryActivity(mContext);
+//        EmailCategoryActivity.start2EmailCategoryActivity(mContext);
+//        ((Activity)mContext).finish();
     }
 
 }

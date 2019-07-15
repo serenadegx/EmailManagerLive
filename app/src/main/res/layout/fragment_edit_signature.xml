@@ -1,23 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.example.emailmanagerlive.settings.SettingsViewModel" />
+    </data>
+
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        app:counterEnabled="true"
-        app:hintEnabled="false"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        app:counterMaxLength="100"
         android:hint=""
-        android:layout_height="wrap_content">
+        app:counterEnabled="true"
+        app:counterMaxLength="100"
+        app:hintEnabled="false">
+
         <EditText
-            android:hint="请输入签名"
-            android:layout_margin="10dp"
-            android:gravity="left"
-            android:maxLength="100"
-            android:background="@drawable/bg_edit_text"
-            android:padding="12dp"
-            android:textColor="@android:color/black"
             android:layout_width="match_parent"
-            android:layout_height="200dp" />
+            android:layout_height="200dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/bg_edit_text"
+            android:gravity="left"
+            android:hint="请输入签名"
+            android:maxLength="100"
+            android:padding="12dp"
+            android:text="@={viewModel.signature}"
+            android:textColor="@android:color/black" />
     </com.google.android.material.textfield.TextInputLayout>
 </layout>
