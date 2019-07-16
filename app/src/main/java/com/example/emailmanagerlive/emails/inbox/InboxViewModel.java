@@ -1,7 +1,6 @@
 package com.example.emailmanagerlive.emails.inbox;
 
 import android.os.SystemClock;
-import android.util.Log;
 
 import androidx.arch.core.util.Function;
 import androidx.lifecycle.LiveData;
@@ -9,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
+import com.example.emailmanagerlive.EmailApplication;
 import com.example.emailmanagerlive.data.Account;
 import com.example.emailmanagerlive.data.Email;
 import com.example.emailmanagerlive.data.source.EmailDataSource;
@@ -33,15 +33,15 @@ public class InboxViewModel extends ViewModel implements EmailsViewModel, EmailD
     private EmailRepository mRepository;
     private Account mAccount;
 
-    public InboxViewModel(EmailRepository repository, Account account) {
+    public InboxViewModel(EmailRepository repository) {
         this.mRepository = repository;
-        this.mAccount = account;
+
     }
 
     @Override
     public void refresh() {
         mRepository.refresh();
-        loadEmails();
+        loadEmails(EmailApplication.getAccount());
     }
 
     @Override
@@ -56,7 +56,8 @@ public class InboxViewModel extends ViewModel implements EmailsViewModel, EmailD
         mDataLoading.postValue(false);
     }
 
-    public void loadEmails() {
+    public void loadEmails(Account account) {
+        this.mAccount = account;
         mDataLoading.setValue(true);
         ThreadPoolFactory.getNormalThreadPoolProxy().execute(new Runnable() {
             @Override

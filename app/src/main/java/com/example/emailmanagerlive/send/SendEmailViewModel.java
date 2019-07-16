@@ -103,9 +103,11 @@ public class SendEmailViewModel extends ViewModel implements EmailDataSource.Cal
                 }
             }
         }
+        content.setValue((TextUtils.isEmpty(content.getValue()) ? "" : content.getValue()) +
+                (TextUtils.isEmpty(mAccount.getRemark()) ? "" : "\n" + mAccount.getRemark()));
     }
 
-    public void send() {
+    public void send(final boolean save2Sent) {
         mNavigator.onSending("正在发送...");
         final Email email = new Email();
         email.setFrom(TextUtils.isEmpty(send.getValue()) ? null : send.getValue());
@@ -118,13 +120,13 @@ public class SendEmailViewModel extends ViewModel implements EmailDataSource.Cal
         ThreadPoolFactory.getNormalThreadPoolProxy().execute(new Runnable() {
             @Override
             public void run() {
-                mRepository.send(mAccount, email, SendEmailViewModel.this);
+                mRepository.send(mAccount, email, save2Sent,SendEmailViewModel.this);
             }
         });
 
     }
 
-    public void reply() {
+    public void reply(final boolean save2Sent) {
         mNavigator.onSending("正在回复...");
         final Email email = new Email();
         email.setId(mEmailParams.getId());
@@ -139,12 +141,12 @@ public class SendEmailViewModel extends ViewModel implements EmailDataSource.Cal
         ThreadPoolFactory.getNormalThreadPoolProxy().execute(new Runnable() {
             @Override
             public void run() {
-                mRepository.reply(mAccount, email, SendEmailViewModel.this);
+                mRepository.reply(mAccount, email, save2Sent,SendEmailViewModel.this);
             }
         });
     }
 
-    public void forward() {
+    public void forward(final boolean save2Sent) {
         mNavigator.onSending("正在转发...");
         final Email email = new Email();
         email.setId(mEmailParams.getId());
@@ -159,7 +161,7 @@ public class SendEmailViewModel extends ViewModel implements EmailDataSource.Cal
         ThreadPoolFactory.getNormalThreadPoolProxy().execute(new Runnable() {
             @Override
             public void run() {
-                mRepository.forward(mAccount, email, SendEmailViewModel.this);
+                mRepository.forward(mAccount, email, save2Sent,SendEmailViewModel.this);
             }
         });
     }

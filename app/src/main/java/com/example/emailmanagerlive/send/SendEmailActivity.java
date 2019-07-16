@@ -103,14 +103,15 @@ public class SendEmailActivity extends AppCompatActivity implements SendEmailNav
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        boolean save2Sent = getSharedPreferences("email", MODE_PRIVATE).getBoolean("save2Sent", false);
         if (id == R.id.action_send) {
             if (mEmailParams.getFunction() == EmailParams.Function.NORMAL_SEND || mEmailParams
                     .getFunction() == EmailParams.Function.EDIT) {
-                viewModel.send();
+                viewModel.send(save2Sent);
             } else if (mEmailParams.getFunction() == EmailParams.Function.REPLY) {
-                viewModel.reply();
+                viewModel.reply(save2Sent);
             } else {
-                viewModel.forward();
+                viewModel.forward(save2Sent);
             }
         } else if (id == R.id.action_attach) {
             openFile();

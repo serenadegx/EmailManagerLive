@@ -8,7 +8,9 @@ import android.widget.CompoundButton;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.emailmanagerlive.EmailApplication;
 import com.example.emailmanagerlive.Event;
+import com.example.emailmanagerlive.MainActivity;
 import com.example.emailmanagerlive.data.Account;
 import com.example.emailmanagerlive.data.AccountDao;
 import com.example.emailmanagerlive.data.Configuration;
@@ -26,6 +28,7 @@ public class SettingsViewModel extends ViewModel {
     public final MutableLiveData<String> sendHost = new MutableLiveData<>();
     public final MutableLiveData<String> sendPort = new MutableLiveData<>();
     public final MutableLiveData<Boolean> isNotify = new MutableLiveData<>();
+    public final MutableLiveData<Boolean> save2Sent = new MutableLiveData<>();
     public final MutableLiveData<Event<String>> snackBarText = new MutableLiveData<>();
 
     private AccountDao mAccountDao;
@@ -33,10 +36,19 @@ public class SettingsViewModel extends ViewModel {
     private SharedPreferences sp;
     private SettingsNavigator mNavigator;
 
-    public CompoundButton.OnCheckedChangeListener listener = new CompoundButton.OnCheckedChangeListener() {
+    public CompoundButton.OnCheckedChangeListener saveListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            sp.edit().putBoolean("save2Sent", isChecked).commit();
+        }
+    };
+
+    public CompoundButton.OnCheckedChangeListener notifyListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             sp.edit().putBoolean("isNotify", isChecked).commit();
+            if (isChecked)
+                MainActivity.startNewEmailWorker();
         }
     };
 
@@ -50,6 +62,10 @@ public class SettingsViewModel extends ViewModel {
         mNavigator.editSignature();
     }
 
+    public void editPersonal(View view) {
+        mNavigator.editPersonal();
+    }
+
     public void start(SharedPreferences sp) {
         this.sp = sp;
         List<Account> accounts = mAccountDao.loadAll();
@@ -58,7 +74,9 @@ public class SettingsViewModel extends ViewModel {
         if (list != null && list.size() > 0) {
             Account curAccount = list.get(0);
             personal.setValue(curAccount.getPersonal());
+            signature.setValue(curAccount.getRemark());
         }
+        save2Sent.setValue(sp.getBoolean("save2Sent", false));
         isNotify.setValue(sp.getBoolean("isNotify", false));
     }
 
@@ -94,21 +112,41 @@ public class SettingsViewModel extends ViewModel {
         });
     }
 
-    public void saveSignature() {
-        List<Account> list = mAccountDao.queryBuilder().where(AccountDao.Properties.IsCur.eq(true)).list();
-        if (list != null && list.size() > 0) {
-            Account curAccount = list.get(0);
-            curAccount.setRemark(signature.getValue());
-            mAccountDao.update(curAccount);
-        }
-        mNavigator.editSignatureSuccess();
-    }
-
     public void bindSignature() {
         List<Account> list = mAccountDao.queryBuilder().where(AccountDao.Properties.IsCur.eq(true)).list();
         if (list != null && list.size() > 0) {
             Account curAccount = list.get(0);
             signature.setValue(curAccount.getRemark());
         }
+    }
+
+    public void bindPersonal() {
+        List<Account> list = mAccountDao.queryBuilder().where(AccountDao.Properties.IsCur.eq(true)).list();
+        if (list != null && list.size() > 0) {
+            Account curAccount = list.get(0);
+            personal.setValue(curAccount.getPersonal());
+        }
+    }
+
+    public void savePersonal() {
+        List<Account> list = mAccountDao.queryBuilder().where(AccountDao.Properties.IsCur.eq(true)).list();
+        if (list != null && list.size() > 0) {
+            Account curAccount = list.get(0);
+            curAccount.setPersonal(personal.getValue());
+            mAccountDao.update(curAccount);
+            EmailApplication.setAccount(curAccount);
+        }
+        mNavigator.editPersonalSuccess();
+    }
+
+    public void saveSignature() {
+        List<Account> list = mAccountDao.queryBuilder().where(AccountDao.Properties.IsCur.eq(true)).list();
+        if (list != null && list.size() > 0) {
+            Account curAccount = list.get(0);
+            curAccount.setRemark(signature.getValue());
+            mAccountDao.update(curAccount);
+            EmailApplication.setAccount(curAccount);
+        }
+        mNavigator.editSignatureSuccess();
     }
 }

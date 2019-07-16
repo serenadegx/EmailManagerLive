@@ -39,7 +39,7 @@ public class DraftsFragment extends Fragment {
         binding = FragmentDraftsBinding.inflate(inflater, container, false);
         binding.rv.setLayoutManager(new LinearLayoutManager(getActivity()));
         binding.rv.addItemDecoration(new EMDecoration(getActivity(), EMDecoration.VERTICAL_LIST, R.drawable.list_divider, 0));
-        viewModel = new DraftsViewModel(EmailRepository.provideRepository(), EmailApplication.getAccount());
+        viewModel = new DraftsViewModel(EmailRepository.provideRepository());
         binding.setViewModel(viewModel);
         binding.setLifecycleOwner(this);
         return binding.getRoot();
@@ -48,7 +48,7 @@ public class DraftsFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        viewModel.loadDrafts();
+        viewModel.loadDrafts(EmailApplication.getAccount());
     }
 
     private void setupListAdapter() {

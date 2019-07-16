@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
+import com.example.emailmanagerlive.EmailApplication;
 import com.example.emailmanagerlive.data.Account;
 import com.example.emailmanagerlive.data.Email;
 import com.example.emailmanagerlive.data.source.EmailDataSource;
@@ -32,14 +33,13 @@ public class DraftsViewModel implements EmailsViewModel, EmailDataSource.GetEmai
     private EmailRepository mRepository;
     private Account mAccount;
 
-    public DraftsViewModel(EmailRepository mRepository, Account mAccount) {
+    public DraftsViewModel(EmailRepository mRepository) {
         this.mRepository = mRepository;
-        this.mAccount = mAccount;
     }
 
     @Override
     public void refresh() {
-        loadDrafts();
+        loadDrafts(EmailApplication.getAccount());
     }
 
     @Override
@@ -55,7 +55,8 @@ public class DraftsViewModel implements EmailsViewModel, EmailDataSource.GetEmai
         mDataLoading.postValue(false);
     }
 
-    public void loadDrafts() {
+    public void loadDrafts(Account account) {
+        this.mAccount = account;
         mDataLoading.setValue(true);
         ThreadPoolFactory.getNormalThreadPoolProxy().execute(new Runnable() {
             @Override

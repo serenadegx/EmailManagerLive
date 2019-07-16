@@ -104,4 +104,9 @@ public class AccountRepository implements AccountDataSource {
         config2.setAuthValue("1".equals(array2[16]));
         EmailApplication.getDaoSession().getConfigurationDao().insert(config2);
     }
+
+    public void setCurAccount(Account account){
+        EmailApplication.getDaoSession().getEmailDao().deleteAll();
+        mLocalDataSource.setCurAccount(account);
+    }
 }

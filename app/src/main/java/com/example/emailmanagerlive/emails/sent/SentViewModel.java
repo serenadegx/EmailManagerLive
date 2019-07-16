@@ -1,12 +1,11 @@
 package com.example.emailmanagerlive.emails.sent;
 
-import android.util.Log;
-
 import androidx.arch.core.util.Function;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
+import com.example.emailmanagerlive.EmailApplication;
 import com.example.emailmanagerlive.data.Account;
 import com.example.emailmanagerlive.data.Email;
 import com.example.emailmanagerlive.data.source.EmailDataSource;
@@ -31,14 +30,13 @@ public class SentViewModel implements EmailsViewModel, EmailDataSource.GetEmails
     private EmailRepository mRepository;
     private Account mAccount;
 
-    public SentViewModel(EmailRepository mRepository, Account mAccount) {
+    public SentViewModel(EmailRepository mRepository) {
         this.mRepository = mRepository;
-        this.mAccount = mAccount;
     }
 
     @Override
     public void refresh() {
-        loadEmails();
+        loadEmails(EmailApplication.getAccount());
     }
 
     @Override
@@ -53,7 +51,8 @@ public class SentViewModel implements EmailsViewModel, EmailDataSource.GetEmails
         mDataLoading.postValue(false);
     }
 
-    public void loadEmails() {
+    public void loadEmails(Account account) {
+        this.mAccount = account;
         mDataLoading.setValue(true);
         ThreadPoolFactory.getNormalThreadPoolProxy().execute(new Runnable() {
             @Override

@@ -38,7 +38,7 @@ public class SentFragment extends Fragment {
         binding = FragmentSentBinding.inflate(inflater, container, false);
         binding.rv.setLayoutManager(new LinearLayoutManager(getActivity()));
         binding.rv.addItemDecoration(new EMDecoration(getActivity(), EMDecoration.VERTICAL_LIST, R.drawable.list_divider, 0));
-        viewModel = new SentViewModel(EmailRepository.provideRepository(), EmailApplication.getAccount());
+        viewModel = new SentViewModel(EmailRepository.provideRepository());
         binding.setViewModel(viewModel);
         binding.setLifecycleOwner(this);
         return binding.getRoot();
@@ -52,6 +52,6 @@ public class SentFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        viewModel.loadEmails();
+        viewModel.loadEmails(EmailApplication.getAccount());
     }
 }

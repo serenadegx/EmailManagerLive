@@ -36,7 +36,6 @@ public class EmailCategoryAdapter extends BaseAdapter<Configuration, BaseViewHol
 
     public void goNext(Configuration item, int position) {
         VerifyActivity.start2VerifyActivity(mContext, item.getCategoryId());
-
     }
 }
 

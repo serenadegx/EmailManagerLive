@@ -20,8 +20,8 @@ public class AccountLocalDataSource implements AccountDataSource {
         this.dao = dao;
     }
 
-    public static AccountLocalDataSource getInstance(AccountDao dao){
-        if (INSTANCE==null){
+    public static AccountLocalDataSource getInstance(AccountDao dao) {
+        if (INSTANCE == null) {
             INSTANCE = new AccountLocalDataSource(dao);
         }
         return INSTANCE;
@@ -39,7 +39,6 @@ public class AccountLocalDataSource implements AccountDataSource {
             dao.updateInTx(list);
         }
         dao.insert(account);
-
     }
 
     @Override
@@ -79,5 +78,18 @@ public class AccountLocalDataSource implements AccountDataSource {
         } else {
             callBack.onDataNotAvailable();
         }
+    }
+
+    public void setCurAccount(Account account) {
+        List<Account> accounts = dao.loadAll();
+        for (int i = 0; i < accounts.size(); i++) {
+            Account _account = accounts.get(i);
+            if (_account.equals(account)) {
+                _account.setCur(true);
+            } else {
+                _account.setCur(false);
+            }
+        }
+        dao.updateInTx(accounts);
     }
 }

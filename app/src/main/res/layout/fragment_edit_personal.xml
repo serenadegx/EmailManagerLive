@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.emailmanagerlive.settings.SettingsViewModel" />
+    </data>
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:hint=""
+        app:counterEnabled="true"
+        app:counterMaxLength="20"
+        app:hintEnabled="false">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/bg_edit_text"
+            android:gravity="left"
+            android:hint="请输入发件人名称"
+            android:maxLength="20"
+            android:padding="12dp"
+            android:text="@={viewModel.personal}"
+            android:textColor="@android:color/black" />
+    </com.google.android.material.textfield.TextInputLayout>
+</layout>

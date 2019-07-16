@@ -38,7 +38,7 @@ public class InboxFragment extends Fragment {
         binding = FragmentInboxBinding.inflate(inflater, container, false);
         binding.rv.setLayoutManager(new LinearLayoutManager(getActivity()));
         binding.rv.addItemDecoration(new EMDecoration(getActivity(), EMDecoration.VERTICAL_LIST, R.drawable.list_divider, 0));
-        viewModel = new InboxViewModel(EmailRepository.provideRepository(), EmailApplication.getAccount());
+        viewModel = new InboxViewModel(EmailRepository.provideRepository());
         binding.setViewModel(viewModel);
         binding.setLifecycleOwner(this);
         return binding.getRoot();
@@ -58,6 +58,6 @@ public class InboxFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        viewModel.loadEmails();
+        viewModel.loadEmails(EmailApplication.getAccount());
     }
 }

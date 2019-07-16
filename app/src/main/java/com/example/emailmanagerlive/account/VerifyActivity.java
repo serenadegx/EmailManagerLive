@@ -35,8 +35,9 @@ public class VerifyActivity extends AppCompatActivity implements VerifyNavigator
 
     @Override
     public void onAccountVerify() {
-        startActivity(new Intent(this, MainActivity.class));
-        finish();
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     private void subscribeToNavigationChanges() {

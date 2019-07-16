@@ -272,7 +272,7 @@ public class EmailRemoteDataSource implements EmailDataSource {
         }
     }
 
-    public void send(final Account account, Email email, CallBack callBack) {
+    public void send(final Account account, Email email, boolean save2Sent, CallBack callBack) {
         Properties props = System.getProperties();
         props.put(account.getConfig().getSendHostKey(), account.getConfig().getSendHostValue());
         props.put(account.getConfig().getSendPortKey(), account.getConfig().getSendPortValue());
@@ -290,7 +290,7 @@ public class EmailRemoteDataSource implements EmailDataSource {
             Message msg = new MimeMessage(session);
             if (email.getFrom() != null) {
                 try {
-                    msg.setFrom(new InternetAddress(email.getFrom(), "serenade"));
+                    msg.setFrom(new InternetAddress(email.getFrom(), account.getPersonal()));
                 } catch (MessagingException e) {
                     e.printStackTrace();
                 }
@@ -324,7 +324,9 @@ public class EmailRemoteDataSource implements EmailDataSource {
             t = (SMTPTransport) session.getTransport(account.getConfig().getSendProtocol());
             t.connect();
             t.sendMessage(msg, msg.getAllRecipients());
-            save2Sent(account, msg);
+            if (save2Sent) {
+                save2Sent(account, msg);
+            }
             callBack.onSuccess();
         } catch (SendFailedException e) {
             e.printStackTrace();
@@ -348,7 +350,7 @@ public class EmailRemoteDataSource implements EmailDataSource {
         }
     }
 
-    public void reply(final Account account, Email email, CallBack callBack) {
+    public void reply(final Account account, Email email, boolean save2Sent, CallBack callBack) {
         Properties props = System.getProperties();
         props.put(account.getConfig().getSendHostKey(), account.getConfig().getSendHostValue());
         props.put(account.getConfig().getSendPortKey(), account.getConfig().getSendPortValue());
@@ -372,7 +374,7 @@ public class EmailRemoteDataSource implements EmailDataSource {
             Message message = folder.getMessage((int) email.getId().longValue());
             Message forward = new MimeMessage(session);
             if (email.getFrom() != null) {
-                forward.setFrom(new InternetAddress(email.getFrom(), "serenade"));
+                forward.setFrom(new InternetAddress(email.getFrom(), account.getPersonal()));
             }
 
             forward.setRecipients(Message.RecipientType.TO,
@@ -405,7 +407,9 @@ public class EmailRemoteDataSource implements EmailDataSource {
             t = (SMTPTransport) session.getTransport(account.getConfig().getSendProtocol());
             t.connect();
             t.sendMessage(forward, forward.getAllRecipients());
-            save2Sent(account, forward);
+            if (save2Sent) {
+                save2Sent(account, forward);
+            }
             callBack.onSuccess();
         } catch (NoSuchProviderException e) {
             callBack.onError();
@@ -433,8 +437,8 @@ public class EmailRemoteDataSource implements EmailDataSource {
         }
     }
 
-    public void forward(Account account, Email email, CallBack callBack) {
-        reply(account, email, callBack);
+    public void forward(Account account, Email email, boolean save2Sent, CallBack callBack) {
+        reply(account, email, save2Sent, callBack);
     }
 
     @Override

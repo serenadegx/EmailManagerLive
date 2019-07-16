@@ -97,14 +97,7 @@ public class VerifyModel extends ViewModel {
     }
 
     private void saveAccount() {
-        List<Account> accounts = EmailApplication.getDaoSession().getAccountDao().loadAll();
-        if (accounts != null && accounts.size() > 0) {
-            for (int i = 0; i < accounts.size(); i++) {
-                Account account = accounts.get(i);
-                account.setCur(false);
-            }
-            EmailApplication.getDaoSession().getAccountDao().updateInTx(accounts);
-        }
+        EmailApplication.getDaoSession().getEmailDao().deleteAll();
         Account data = new Account();
         data.setAccount(account.getValue());
         data.setPwd(pwd.getValue());

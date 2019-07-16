@@ -1,5 +1,6 @@
 package com.example.emailmanagerlive.data;
 
+import androidx.annotation.Nullable;
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 
@@ -13,7 +14,7 @@ import org.greenrobot.greendao.DaoException;
 @Entity
 public class Account extends BaseObservable {
     @Id(autoincrement = true)
-    private long id;
+    private Long id;
     @NotNull
     private String account;
     @NotNull
@@ -31,9 +32,15 @@ public class Account extends BaseObservable {
     /** Used for active entity operations. */
     @Generated(hash = 335469827)
     private transient AccountDao myDao;
+    @Generated(hash = 1497256190)
+    private transient Long config__resolvedKey;
 
-    @Generated(hash = 1848656263)
-    public Account(long id, @NotNull String account, @NotNull String pwd,
+
+    public Account() {
+    }
+
+    @Generated(hash = 1099617493)
+    public Account(Long id, @NotNull String account, @NotNull String pwd,
             long configId, boolean isCur, String personal, String remark) {
         this.id = id;
         this.account = account;
@@ -44,14 +51,7 @@ public class Account extends BaseObservable {
         this.remark = remark;
     }
 
-    @Generated(hash = 882125521)
-    public Account() {
-    }
-
-    @Generated(hash = 1497256190)
-    private transient Long config__resolvedKey;
-
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -79,7 +79,7 @@ public class Account extends BaseObservable {
         this.remark = remark;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -115,6 +115,15 @@ public class Account extends BaseObservable {
 
     public void setIsCur(boolean isCur) {
         this.isCur = isCur;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof Account) {
+            Account account = (Account) obj;
+            return account.getId() == this.getId();
+        }
+        return super.equals(obj);
     }
 
     /** To-one relationship, resolved on first access. */
@@ -192,6 +201,4 @@ public class Account extends BaseObservable {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getAccountDao() : null;
     }
-
-
 }

@@ -25,7 +25,7 @@ public class AccountDao extends AbstractDao<Account, Long> {
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property Id = new Property(0, long.class, "id", true, "_id");
+        public final static Property Id = new Property(0, Long.class, "id", true, "_id");
         public final static Property Account = new Property(1, String.class, "account", false, "ACCOUNT");
         public final static Property Pwd = new Property(2, String.class, "pwd", false, "PWD");
         public final static Property ConfigId = new Property(3, long.class, "configId", false, "CONFIG_ID");
@@ -50,7 +50,7 @@ public class AccountDao extends AbstractDao<Account, Long> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"ACCOUNT\" (" + //
-                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ," + // 0: id
+                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
                 "\"ACCOUNT\" TEXT NOT NULL ," + // 1: account
                 "\"PWD\" TEXT NOT NULL ," + // 2: pwd
                 "\"CONFIG_ID\" INTEGER NOT NULL ," + // 3: configId
@@ -68,7 +68,11 @@ public class AccountDao extends AbstractDao<Account, Long> {
     @Override
     protected final void bindValues(DatabaseStatement stmt, Account entity) {
         stmt.clearBindings();
-        stmt.bindLong(1, entity.getId());
+ 
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
+        }
         stmt.bindString(2, entity.getAccount());
         stmt.bindString(3, entity.getPwd());
         stmt.bindLong(4, entity.getConfigId());
@@ -88,7 +92,11 @@ public class AccountDao extends AbstractDao<Account, Long> {
     @Override
     protected final void bindValues(SQLiteStatement stmt, Account entity) {
         stmt.clearBindings();
-        stmt.bindLong(1, entity.getId());
+ 
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
+        }
         stmt.bindString(2, entity.getAccount());
         stmt.bindString(3, entity.getPwd());
         stmt.bindLong(4, entity.getConfigId());
@@ -113,13 +121,13 @@ public class AccountDao extends AbstractDao<Account, Long> {
 
     @Override
     public Long readKey(Cursor cursor, int offset) {
-        return cursor.getLong(offset + 0);
+        return cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0);
     }    
 
     @Override
     public Account readEntity(Cursor cursor, int offset) {
         Account entity = new Account( //
-            cursor.getLong(offset + 0), // id
+            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             cursor.getString(offset + 1), // account
             cursor.getString(offset + 2), // pwd
             cursor.getLong(offset + 3), // configId
@@ -132,7 +140,7 @@ public class AccountDao extends AbstractDao<Account, Long> {
      
     @Override
     public void readEntity(Cursor cursor, Account entity, int offset) {
-        entity.setId(cursor.getLong(offset + 0));
+        entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setAccount(cursor.getString(offset + 1));
         entity.setPwd(cursor.getString(offset + 2));
         entity.setConfigId(cursor.getLong(offset + 3));
@@ -158,7 +166,7 @@ public class AccountDao extends AbstractDao<Account, Long> {
 
     @Override
     public boolean hasKey(Account entity) {
-        throw new UnsupportedOperationException("Unsupported for entities with a non-null key");
+        return entity.getId() != null;
     }
 
     @Override

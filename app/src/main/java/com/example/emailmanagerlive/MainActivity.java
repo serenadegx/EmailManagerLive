@@ -68,21 +68,9 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         replaceFragmentInActivity(InboxFragment.newInstance(), getSupportFragmentManager());
         //启动新消息提醒任务
-        startNewEmailWorker();
-    }
-
-    private void startNewEmailWorker() {
-        //设置约束条件
-        Constraints constraints = new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)//网络可用
-                .build();
-
-        PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(NewEmailWorker.class,
-                5, TimeUnit.MINUTES)//五分钟分钟执行一次
-                .setConstraints(constraints)
-                .build();
-        WorkManager.getInstance().enqueueUniquePeriodicWork("NewEmail",
-                ExistingPeriodicWorkPolicy.REPLACE, workRequest);
+        if (getSharedPreferences("email", MODE_PRIVATE).getBoolean("isNotify", false)) {
+            startNewEmailWorker();
+        }
     }
 
     private void replaceFragmentInActivity(Fragment fragment, FragmentManager fragmentManager) {
@@ -148,5 +136,19 @@ public class MainActivity extends AppCompatActivity
 
     public static void start2MainActivity(Context context) {
         context.startActivity(new Intent(context, MainActivity.class));
+    }
+
+    public static void startNewEmailWorker() {
+        //设置约束条件
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)//网络可用
+                .build();
+
+        PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(NewEmailWorker.class,
+                5, TimeUnit.MINUTES)//五分钟分钟执行一次
+                .setConstraints(constraints)
+                .build();
+        WorkManager.getInstance().enqueueUniquePeriodicWork("NewEmail",
+                ExistingPeriodicWorkPolicy.REPLACE, workRequest);
     }
 }

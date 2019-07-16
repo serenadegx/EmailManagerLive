@@ -64,7 +64,6 @@ public class NewEmailWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        Log.i("Mango", "Update New Email");
         Store store = null;
         try {
             store = session.getStore(account.getConfig().getReceiveProtocol());
@@ -93,12 +92,13 @@ public class NewEmailWorker extends Worker {
                 f.idle();
                 supportsIdle = true;
             }
-            //这里原本要循环执行，但是使用WorkManager后可以使用它的功能重复执行
-            if (supportsIdle && folder instanceof IMAPFolder) {
-                IMAPFolder f = (IMAPFolder) folder;
-                f.idle();
-            } else {
-                folder.getMessageCount();
+            for (; ; ) {
+                if (supportsIdle && folder instanceof IMAPFolder) {
+                    IMAPFolder f = (IMAPFolder) folder;
+                    f.idle();
+                } else {
+                    folder.getMessageCount();
+                }
             }
         } catch (NoSuchProviderException e) {
             e.printStackTrace();

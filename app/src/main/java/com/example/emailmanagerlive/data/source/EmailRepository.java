@@ -120,8 +120,8 @@ public class EmailRepository implements EmailDataSource {
      * @param email
      * @param callBack
      */
-    public void send(Account account, Email email, CallBack callBack) {
-        mRemoteDataSource.send(account, email, callBack);
+    public void send(Account account, Email email, boolean save2Sent, CallBack callBack) {
+        mRemoteDataSource.send(account, email, save2Sent, callBack);
     }
 
     /**
@@ -131,12 +131,12 @@ public class EmailRepository implements EmailDataSource {
      * @param email
      * @param callBack
      */
-    public void reply(Account account, Email email, CallBack callBack) {
-        mRemoteDataSource.reply(account, email, callBack);
+    public void reply(Account account, Email email, boolean save2Sent, CallBack callBack) {
+        mRemoteDataSource.reply(account, email, save2Sent, callBack);
     }
 
-    public void forward(Account account, Email email, CallBack callBack) {
-        mRemoteDataSource.forward(account, email, callBack);
+    public void forward(Account account, Email email, boolean save2Sent, CallBack callBack) {
+        mRemoteDataSource.forward(account, email, save2Sent, callBack);
     }
 
     public void save2Drafts(Account account, Email data, CallBack callBack) {

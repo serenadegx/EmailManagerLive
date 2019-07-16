@@ -25,6 +25,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsNavig
 
     public static final String SETTINGS = "settings";
     public static final String SIGN_TAG = "editSignature";
+    public static final String PERSONAL_TAG = "editPersonal";
 
     public static final int REQUEST_CODE = 715;
     private ActivitySettingsBinding binding;
@@ -53,6 +54,8 @@ public class SettingsActivity extends AppCompatActivity implements SettingsNavig
         if (item.getItemId() == R.id.action_done) {
             if (getSupportFragmentManager().findFragmentById(R.id.content) instanceof SettingsFragment) {
                 mSettingsViewModel.modify();
+            } else if (getSupportFragmentManager().findFragmentById(R.id.content) instanceof EditPersonalFragment) {
+                mSettingsViewModel.savePersonal();
             } else {
                 mSettingsViewModel.saveSignature();
             }
@@ -75,6 +78,18 @@ public class SettingsActivity extends AppCompatActivity implements SettingsNavig
 
     @Override
     public void editSignatureSuccess() {
+        binding.toolbar.setTitle("设置");
+        replaceFragmentInActivity(SETTINGS);
+    }
+
+    @Override
+    public void editPersonal() {
+        binding.toolbar.setTitle("修改名称");
+        replaceFragmentInActivity(PERSONAL_TAG);
+    }
+
+    @Override
+    public void editPersonalSuccess() {
         binding.toolbar.setTitle("设置");
         replaceFragmentInActivity(SETTINGS);
     }
@@ -106,6 +121,8 @@ public class SettingsActivity extends AppCompatActivity implements SettingsNavig
         if (fragment == null) {
             if (SETTINGS.equals(tag)) {
                 fragment = SettingsFragment.newInstance();
+            } else if (PERSONAL_TAG.equals(tag)) {
+                fragment = EditPersonalFragment.newInstance();
             } else {
                 fragment = EditSignatureFragment.newInstance();
             }

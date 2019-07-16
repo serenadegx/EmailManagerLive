@@ -8,4 +8,8 @@ public interface SettingsNavigator {
     void editSignature();
 
     void editSignatureSuccess();
+
+    void editPersonal();
+
+    void editPersonalSuccess();
 }
